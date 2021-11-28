@@ -50,6 +50,7 @@
 import logoImg from '@/assets/img/logo.png'
 import { login } from '@/api/user'
 import { setToken } from '@/utils/auth'
+import { mapGetters, mapMutations } from 'vuex'
 
 export default {
   data() {
@@ -70,6 +71,9 @@ export default {
   },
   mounted() {},
   methods: {
+    ...mapMutations({
+      SET_NAME: 'user/SET_NAME',
+    }),
     loginByWechat() {},
     showMessage(type, message) {
       this.$message({
@@ -78,13 +82,16 @@ export default {
       })
     },
     submitForm(loginForm) {
+      let _this = this
       this.$refs[loginForm].validate((valid) => {
         if (valid) {
           let userinfo = this.loginForm
           login(userinfo).then((res) => {
-            let userList = res.data.userList
-            setToken('Token', userList.token)
+            setToken('Token', res.data.token)
+            debugger
+            this.SET_NAME(_this.loginForm.username)
             this.$router.push({ path: '/' })
+
             this.$store.dispatch('initLeftMenu') //设置左边菜单始终为展开状态
           })
         }

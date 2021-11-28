@@ -27,19 +27,17 @@
             <el-submenu index="2" popper-class="infoItem">
               <template slot="title">
                 <div class="welcome">
-                  <span class="name">{{ $t('commons.hi') }},</span>
-                  <span class="name avatarname">
-                    {{ $t(`commons.${name}`) }}</span
-                  >
+                  <span class="name">追溯,</span>
+                  <span class="name avatarname"> {{ name }}</span>
                 </div>
-                <img :src="avatar" class="avatar" alt="" />
+                <img :src="logo" class="avatar" alt="" />
               </template>
-              <el-menu-item index="2-1" @click="setDialogInfo('info')">{{
+              <!-- <el-menu-item index="2-1" @click="setDialogInfo('info')">{{
                 $t('commons.infoShow')
               }}</el-menu-item>
               <el-menu-item index="2-2" @click="setDialogInfo('pass')">{{
                 $t('commons.infoModify')
-              }}</el-menu-item>
+              }}</el-menu-item> -->
               <el-menu-item index="2-3" @click="setDialogInfo('logout')">{{
                 $t('commons.quit')
               }}</el-menu-item>

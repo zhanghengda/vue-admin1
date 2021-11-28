@@ -1,8 +1,3 @@
-<b>小爱Admin</b>
-
-**A magical vue element touzi admin.**
-
-- [效果演示地址](http://www.jiouai.com/permission/#/login)
 
 **分支说明：**
 
@@ -12,11 +7,6 @@
 
 **dev-permission分支**：<b color="#87DE75">增加了权限管理(包括页面权限和按钮权限)的功能和顶栏三级菜单显示，完全剥离nodejs后台，使用mockjs模拟数据，让用户只需关注前端，更容易上手学习。目前此分支为正常维护分支。如有需要，请大家clone本分支代码运行。</b>
 
-## 提示
-<p style="display:flex;align-items:center;">
- 如果你觉得该项目对你有帮忙，记得给我点赞吧!<img src="https://github.com/wdlhao/vue2-element-touzi-admin/blob/dev-base/src/assets/img/zan.png" width="80px" /></p>
-
-## About
 
 本文主要讲解dev-permission分支内容：
 
@@ -49,9 +39,7 @@
  
 - [less](http://lesscss.cn/)：Less 是一门 CSS 预处理语言，它扩展了 CSS 语言，增加了变量、Mixin、函数等特性，使 CSS 更易维护和扩展。
  
-- [element-ui](https://element.eleme.io/)：Element,一套为开发者、设计师和产品经理准备的基于 Vue 2.0 的桌面端组件库。
  
-- [mockjs](https://github.com/nuysoft/Mock/wiki/Getting-Started)：生成随机数据，拦截 Ajax 请求。
 
 
 ## 前序准备
@@ -64,10 +52,7 @@
         
 
 ## 开发：
-1. git clone -b dev-permission https://github.com/wdlhao/vue2-element-touzi-admin  (注意：要从dev-permission分支拉取代码)
 
-1. cd vue2-element-touzi-admin
- 
 1. npm install
 
 **本地运行：**
@@ -90,19 +75,4 @@ admin：拥有最高权限，可以查看所有的页面和按钮；
 
 editor：只有被赋予权限的页面和按钮才可以看到；
 
-
-## [查看更多demo](http://www.jiouai.com/permission/#/login)
-![image](https://github.com/wdlhao/vue2-element-touzi-admin/blob/dev-permission/src/assets/github/1.png)
-![image](https://github.com/wdlhao/vue2-element-touzi-admin/blob/dev-permission/src/assets/github/2.png)
-![image](https://github.com/wdlhao/vue2-element-touzi-admin/blob/dev-permission/src/assets/github/3.png)
-![image](https://github.com/wdlhao/vue2-element-touzi-admin/blob/dev-permission/src/assets/github/4.png)
-![image](https://github.com/wdlhao/vue2-element-touzi-admin/blob/dev-permission/src/assets/github/5.png)
-
-
-## 技术答疑，交流QQ群
-项目说明：小爱ADMIN 是完全开源免费的管理系统集成方案，可以直接应用于相关后台管理系统模板；很多重点地方都做了详细的注释和解释。如果你也一样喜欢前端开发，欢迎加入我们的讨论/学习群，群内可以提问答疑，分享学习资料；
-
-欢迎添加群主微信和qq群答疑：
-
-![image](https://github.com/wdlhao/vue2-element-touzi-admin/blob/dev-permission/src/assets/img/qcode.jpg)
 

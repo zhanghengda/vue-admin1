@@ -10,20 +10,6 @@
         <div class="notify-row"></div>
         <div class="userinfo">
           <el-menu class="el-menu-demo" mode="horizontal">
-            <!-- <el-submenu index="1" popper-class="langItem">
-                            <template slot="title">
-                                <img :src="langLogo" class='langAvatar' alt="">
-                            </template>
-                            <el-menu-item index="1-1" @click="changeLocale('zh')">
-                                <img :src="chinaImg" class='langAvatar' alt="">
-                                <span class="intro">中文</span>
-                            </el-menu-item>
-                            <el-menu-item index="1-2" @click="changeLocale('en')">
-                                <img :src="americaImg" class='langAvatar' alt="">
-                                <span class="intro">EngList</span>
-                            </el-menu-item>
-                        </el-submenu> -->
-
             <el-submenu index="2" popper-class="infoItem">
               <template slot="title">
                 <div class="welcome">
@@ -32,12 +18,6 @@
                 </div>
                 <img :src="logo" class="avatar" alt="" />
               </template>
-              <!-- <el-menu-item index="2-1" @click="setDialogInfo('info')">{{
-                $t('commons.infoShow')
-              }}</el-menu-item>
-              <el-menu-item index="2-2" @click="setDialogInfo('pass')">{{
-                $t('commons.infoModify')
-              }}</el-menu-item> -->
               <el-menu-item index="2-3" @click="setDialogInfo('logout')">{{
                 $t('commons.quit')
               }}</el-menu-item>
@@ -55,30 +35,13 @@ import * as mUtils from '@/utils/mUtils'
 import { setToken, getToken } from '@/utils/auth'
 import store from '@/store'
 import topMenu from './topMenu'
-import wechatImg from '@/assets/img/wechat.jpg'
-import qqImg from '@/assets/img/qq.png'
 import logoImg from '@/assets/img/logo.png'
-import chinaImg from '@/assets/img/china.svg'
-import americaImg from '@/assets/img/america.svg'
-import { github } from '@/utils/env'
 
 export default {
   name: 'head-nav',
   data() {
     return {
       logo: logoImg,
-      langLogo: getToken('langLogo') || americaImg,
-      chinaImg: chinaImg,
-      americaImg: americaImg,
-      wechat: {
-        wechatImg: wechatImg,
-        isWechat: false,
-      },
-      qq: {
-        qqImg: qqImg,
-        isQq: false,
-      },
-      github: github,
       menu: {
         userBgcolor: '#f0f2f5',
       },
@@ -96,18 +59,6 @@ export default {
   created() {},
   mounted() {},
   methods: {
-    showWechat() {
-      this.wechat.isWechat = true
-    },
-    hideWechat() {
-      this.wechat.isWechat = false
-    },
-    showQq() {
-      this.qq.isQq = true
-    },
-    hideQq() {
-      this.qq.isQq = false
-    },
     logout() {
       this.$store.dispatch('LogOut').then(() => {
         location.reload()
@@ -129,17 +80,6 @@ export default {
           this.logout()
           break
       }
-    },
-    // 切换语言
-    changeLocale(type) {
-      setToken('lang', type)
-      this.$i18n.locale = type
-      if (type === 'en') {
-        this.langLogo = this.americaImg
-      } else {
-        this.langLogo = this.chinaImg
-      }
-      setToken('langLogo', this.langLogo)
     },
   },
 }

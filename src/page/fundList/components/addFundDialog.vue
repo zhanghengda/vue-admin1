@@ -71,7 +71,7 @@
           <el-input v-model.number="form.inspectionResult"></el-input>
         </el-form-item>
         <el-form-item label="企业信息:">
-          <el-input v-model.number="form.enterpriseInfo"></el-input>
+            <Editor @listenToDetail="getDetail" :description="form.enterpriseInfo" :uploadKey="'marketInfo'"></Editor>
         </el-form-item>
         <el-form-item label="资质信息:">
           <el-input v-model.number="form.qualificationInfo"></el-input>
@@ -117,6 +117,8 @@ import { addMoney, updateMoney } from '@/api/money'
 import AreaJson from '@/assets/datas/area.json'
 import { create, update } from '@/api/user'
 let moment = require('moment')
+import Editor from "@/components/editor";
+
 import { getToken, setToken, removeToken } from '@/utils/auth'
 export default {
   name: 'addFundDialogs',
@@ -235,6 +237,9 @@ export default {
       },
     }
   },
+  components:{
+Editor
+  },
   props: {
     isShow: Boolean,
     dialogRow: Object,
@@ -260,6 +265,9 @@ export default {
   methods: {
     handleRemove(file, fileList) {
       console.log(file, fileList)
+    },
+       getDetail(data) {
+      this.form.enterpriseInfo = data;
     },
     handleAvatarSuccess(res, file) {
       if (file.code == 0) {
@@ -324,7 +332,7 @@ export default {
             formData.trustInfoRecordDate
           ).format('YYYY-MM-DD')
           formData.expireDate = moment(formData.expireDate).format(
-            'YYYY-MM-DD:HH:MM:SS'
+            'YYYY-MM-DD HH:MM:SS'
           )
           const para = Object.assign({}, formData)
           console.log(para)

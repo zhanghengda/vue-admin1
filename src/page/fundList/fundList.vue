@@ -83,6 +83,7 @@
         <el-table-column prop="productRemark" label="产品备注" align="center">
         </el-table-column>
         <el-table-column prop="enterpriseInfo" label="企业信息" align="center">
+
         </el-table-column>
         <el-table-column
           prop="qualificationInfo"

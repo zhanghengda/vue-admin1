@@ -30,6 +30,13 @@ export function create(params) {
     data: params,
   })
 }
+export function upload(params) {
+  return request({
+    url: '/api/picture/upload',
+    method: 'post',
+    data: params,
+  })
+}
 export function update(params) {
   return request({
     url: '/api/product/update',

@@ -48,7 +48,7 @@
 
 <script>
 import logoImg from '@/assets/img/logo.png'
-import { login } from '@/api/user'
+import { login, baseimgUrl } from '@/api/user'
 import { setToken } from '@/utils/auth'
 import { mapGetters, mapMutations } from 'vuex'
 
@@ -88,12 +88,18 @@ export default {
           let userinfo = this.loginForm
           login(userinfo).then((res) => {
             setToken('Token', res.data.token)
-            debugger
-            this.SET_NAME(_this.loginForm.username)
+            this.getbaseImg()
             this.$router.push({ path: '/' })
 
             this.$store.dispatch('initLeftMenu') //设置左边菜单始终为展开状态
           })
+        }
+      })
+    },
+    getbaseImg() {
+      baseimgUrl().then((res) => {
+        if (res.code == 0) {
+          localStorage.setItem('baseUrl', res.data)
         }
       })
     },

@@ -56,7 +56,7 @@ module.exports = {
     //       changeOrigin: true
     //   }
     // }
-    proxy: 'http://5eff-120-235-139-181.ngrok.io',
+    proxy: 'http://5d6f-120-235-127-176.ngrok.io',
   },
   // webpack相关配置
   chainWebpack: (config) => {

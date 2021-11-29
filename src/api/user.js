@@ -16,7 +16,7 @@ export function getproduct(params) {
   })
 }
 
-export function baseUrl(params) {
+export function baseimgUrl(params) {
   return request({
     url: '/api/config/img/baseUrl',
     method: 'get',

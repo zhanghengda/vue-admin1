@@ -26,12 +26,21 @@
         </el-table-column>
         <el-table-column
           prop="productNo"
-          label="产品编号"
+          label="溯源号码"
+          align="center"
+          width="80"
+        >
+        </el-table-column>
+        <el-table-column
+          prop="identifyCode"
+          label="防伪码（4位）"
           align="center"
           width="80"
         >
         </el-table-column>
         <el-table-column prop="productName" label="产品名称" align="center">
+        </el-table-column>
+        <el-table-column prop="bannerImg" label="横幅图" align="center">
         </el-table-column>
         <el-table-column
           prop="inspectionEnterprise"
@@ -107,18 +116,6 @@
           <template slot-scope="scope">
             <el-icon name="time"></el-icon>
             <span style="margin-left: 10px">{{ scope.row.expireDate }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="createTime"
-          label="创建时间"
-          align="center"
-          sortable
-          width="170"
-        >
-          <template slot-scope="scope">
-            <el-icon name="time"></el-icon>
-            <span style="margin-left: 10px">{{ scope.row.createTime }}</span>
           </template>
         </el-table-column>
         <el-table-column prop="traceLink" label="追溯链接" align="center">

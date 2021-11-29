@@ -11,56 +11,97 @@
       <el-form
         ref="form"
         :model="form"
+        label-width="170px"
         :rules="form_rules"
-        :label-width="dialog.formLabelWidth"
         style="margin:10px;width:auto;"
       >
-        <!-- <el-form-item prop="incomePayType" label="收支类型:">
-          <el-select v-model="form.incomePayType" placeholder="收支类型">
-            <el-option
-              v-for="item in payType"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            >
-            </el-option>
-          </el-select>
-        </el-form-item> -->
-        <el-form-item prop="username" label="产品编号:">
+        <el-form-item prop="productNo" label="溯源号码:">
           <el-input type="text" v-model="form.productNo"></el-input>
         </el-form-item>
-        <el-form-item prop="username" label="产品名称:">
+        <el-form-item prop="identifyCode" label="防伪码（4位）:">
+          <el-input type="text" v-model="form.identifyCode"></el-input>
+        </el-form-item>
+        <el-form-item label="横幅图">
+          <el-upload
+            class="upload-demo"
+            action="/api/picture/upload"
+            :on-preview="handlePreview"
+            :before-upload="beforeAvatarUpload"
+            :on-remove="handleRemove"
+            :file-list="fileList"
+            :on-success="handleAvatarSuccess"
+            :headers="token"
+            list-type="picture"
+          >
+            <el-button size="small" type="primary">点击上传</el-button>
+            <div slot="tip" class="el-upload__tip">
+              只能上传jpg/png文件，且不超过500kb
+            </div>
+          </el-upload>
+        </el-form-item>
+
+        <el-form-item label="产品名称:">
           <el-input type="text" v-model="form.productName"></el-input>
         </el-form-item>
 
-        <el-form-item prop="address" label="籍贯:">
-          <el-cascader
-            v-model="form.address"
-            placeholder="请选择地区"
-            :props="{ expandTrigger: 'hover' }"
-            :options="areaData"
-            @change="handleChange"
-            ref="cascaderAddr"
+        <el-form-item label="鉴定企业名称:">
+          <el-input type="text" v-model="form.inspectionEnterprise"></el-input>
+        </el-form-item>
+        <el-form-item label="原产地:">
+          <el-input type="text" v-model="form.sourceArea"></el-input>
+        </el-form-item>
+        <el-form-item label="生产企业:">
+          <el-input type="text" v-model="form.produceEnterprise"></el-input>
+        </el-form-item>
+        <el-form-item label="委托单位:">
+          <el-input type="text" v-model="form.trustCompany"></el-input>
+        </el-form-item>
+        <el-form-item label="序列号:">
+          <el-input type="text" v-model="form.serialNo"></el-input>
+        </el-form-item>
+        <el-form-item label="检验日期:">
+          <el-date-picker
+            v-model.number="form.inspectionDate"
+            type="date"
+            placeholder="选择日期时间"
           >
-          </el-cascader>
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item label="检验结论:">
+          <el-input v-model.number="form.inspectionResult"></el-input>
+        </el-form-item>
+        <el-form-item label="企业信息:">
+          <el-input v-model.number="form.enterpriseInfo"></el-input>
+        </el-form-item>
+        <el-form-item label="资质信息:">
+          <el-input v-model.number="form.qualificationInfo"></el-input>
+        </el-form-item>
+        <el-form-item label="委托方简介:">
+          <el-input v-model.number="form.trustInfo"></el-input>
+        </el-form-item>
+        <el-form-item label="委托方简介记录日期:">
+          <el-date-picker
+            v-model.number="form.trustInfoRecordDate"
+            type="date"
+            placeholder="选择日期时间"
+          >
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item label="到期日期:">
+          <el-date-picker
+            v-model.number="form.expireDate"
+            type="datetime"
+            placeholder="选择日期时间"
+          >
+          </el-date-picker>
         </el-form-item>
 
-        <el-form-item prop="income" label="收入:">
-          <el-input v-model.number="form.income"></el-input>
+        <el-form-item label="产品备注:">
+          <el-input type="textarea" v-model="form.productRemark"></el-input>
         </el-form-item>
-
-        <el-form-item prop="pay" label="支出:">
-          <el-input v-model.number="form.pay"></el-input>
+        <el-form-item label="追溯链接:">
+          <el-input v-model="form.traceLink"></el-input>
         </el-form-item>
-
-        <el-form-item prop="accoutCash" label="账户现金:">
-          <el-input v-model.number="form.accoutCash"></el-input>
-        </el-form-item>
-
-        <el-form-item label="备注:">
-          <el-input type="textarea" v-model="form.remarks"></el-input>
-        </el-form-item>
-
         <el-form-item class="text_right">
           <el-button @click="isVisible = false">取 消</el-button>
           <el-button type="primary" @click="onSubmit('form')">提 交</el-button>
@@ -74,7 +115,9 @@
 import { mapState, mapGetters } from 'vuex'
 import { addMoney, updateMoney } from '@/api/money'
 import AreaJson from '@/assets/datas/area.json'
-
+import { create, update } from '@/api/user'
+let moment = require('moment')
+import { getToken, setToken, removeToken } from '@/utils/auth'
 export default {
   name: 'addFundDialogs',
   data() {
@@ -99,10 +142,26 @@ export default {
       }
     }
     return {
+      fileList: [
+        // {
+        //   name: 'food.jpeg',
+        //   url:
+        //     'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100',
+        // },
+        // {
+        //   name: 'food2.jpeg',
+        //   url:
+        //     'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100',
+        // },
+      ],
+      token: {
+        Authorization: 'Bearer ' + getToken('Token'),
+      },
       areaData: [],
       isVisible: this.isShow,
       form: {
         productNo: '',
+        identifyCode: '',
         /** 产品名称 */
         productName: '',
         /** 横幅图 */
@@ -150,6 +209,12 @@ export default {
         { label: '转账', value: '8' },
       ],
       form_rules: {
+        productNo: [
+          { required: true, message: '产品编号不能为空！', trigger: 'blur' },
+        ],
+        identifyCode: [
+          { required: true, message: '防伪码不能为空！', trigger: 'blur' },
+        ],
         username: [
           { required: true, message: '用户名不能为空！', trigger: 'blur' },
         ],
@@ -193,6 +258,31 @@ export default {
     }
   },
   methods: {
+    handleRemove(file, fileList) {
+      console.log(file, fileList)
+    },
+    handleAvatarSuccess(res, file) {
+      if (file.code == 0) {
+        this.fileList.push({
+          url: localStorage.getItem('baseUrl') + res.data,
+          url2: res.data,
+        })
+        console.log(file, res, this.fileList)
+      }
+      //   this.imageUrl = URL.createObjectURL(file.raw)
+    },
+    beforeAvatarUpload(file) {
+      const isJPG = file.type === 'image/jpeg'
+      const isLt2M = file.size / 1024 / 1024 < 1
+
+      if (!isLt2M) {
+        this.$message.error('上传头像图片大小不能超过 1MB!')
+      }
+      return isJPG && isLt2M
+    },
+    handlePreview(file) {
+      console.log(file)
+    },
     getCascaderObj(val, opt) {
       return val.map(function(value, index, array) {
         for (var item of opt) {
@@ -218,12 +308,29 @@ export default {
       this.$refs[form].validate((valid) => {
         if (valid) {
           //表单数据验证完成之后，提交数据;
+          debugger
+
           let formData = this[form]
+          let arrnew = this.fileList
+            .map((obj, index) => {
+              return obj.url2
+            })
+            .join(',')
+          formData.bannerImg = arrnew
+          formData.inspectionDate = moment(formData.inspectionDate).format(
+            'YYYY-MM-DD'
+          )
+          formData.trustInfoRecordDate = moment(
+            formData.trustInfoRecordDate
+          ).format('YYYY-MM-DD')
+          formData.expireDate = moment(formData.expireDate).format(
+            'YYYY-MM-DD:HH:MM:SS'
+          )
           const para = Object.assign({}, formData)
           console.log(para)
           // edit
           if (this.addFundDialog.type === 'edit') {
-            updateMoney(para).then((res) => {
+            update(para).then((res) => {
               this.$message({
                 message: '修改成功',
                 type: 'success',
@@ -234,7 +341,7 @@ export default {
             })
           } else {
             // add
-            addMoney(para).then((res) => {
+            create(para).then((res) => {
               this.$message({
                 message: '新增成功',
                 type: 'success',

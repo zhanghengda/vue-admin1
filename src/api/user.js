@@ -37,6 +37,14 @@ export function upload(params) {
     data: params,
   })
 }
+export function consumerFeedback(params) {
+  return request({
+    url: '/api/consumerFeedback/pages',
+    method: 'get',
+    data: params,
+  })
+}
+
 export function update(params) {
   return request({
     url: '/api/product/update',

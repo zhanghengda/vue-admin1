@@ -21,6 +21,10 @@
         <el-form-item prop="identifyCode" label="防伪码（4位）:">
           <el-input type="text" v-model="form.identifyCode"></el-input>
         </el-form-item>
+
+        <el-form-item label="产品名称:">
+          <el-input type="text" v-model="form.productName"></el-input>
+        </el-form-item>
         <el-form-item label="横幅图">
           <el-upload
             class="upload-demo"
@@ -39,13 +43,27 @@
             </div>
           </el-upload>
         </el-form-item>
-
-        <el-form-item label="产品名称:">
-          <el-input type="text" v-model="form.productName"></el-input>
-        </el-form-item>
-
         <el-form-item label="鉴定企业名称:">
           <el-input type="text" v-model="form.inspectionEnterprise"></el-input>
+        </el-form-item>
+        <el-form-item label="鉴定企业名称:">
+          <el-upload
+            class="avatar-uploader"
+            action="/api/picture/upload"
+            :show-file-list="false"
+            :headers="token"
+            :on-success="handleAvatarSuccess1"
+            :before-upload="beforeAvatarUpload"
+          >
+            <div class="el-upload">
+              <img
+                v-if="this.form.inspectionEnterpriseLogo"
+                :src="getImgBaseUrl + form.inspectionEnterpriseLogo"
+                class="avatar"
+              />
+              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            </div>
+          </el-upload>
         </el-form-item>
         <el-form-item label="原产地:">
           <el-input type="text" v-model="form.sourceArea"></el-input>
@@ -61,27 +79,35 @@
         </el-form-item>
         <el-form-item label="检验日期:">
           <el-date-picker
-            v-model.number="form.inspectionDate"
+            v-model="form.inspectionDate"
             type="date"
             placeholder="选择日期时间"
           >
           </el-date-picker>
         </el-form-item>
         <el-form-item label="检验结论:">
-          <el-input v-model.number="form.inspectionResult"></el-input>
+          <el-input v-model="form.inspectionResult"></el-input>
         </el-form-item>
         <el-form-item label="企业信息:">
-            <Editor @listenToDetail="getDetail" :description="form.enterpriseInfo" :uploadKey="'marketInfo'"></Editor>
+          <Editor
+            @listenToDetail="getDetail"
+            :description="form.enterpriseInfo"
+            :uploadKey="'marketInfo'"
+          ></Editor>
         </el-form-item>
         <el-form-item label="资质信息:">
-          <el-input v-model.number="form.qualificationInfo"></el-input>
+          <el-input v-model="form.qualificationInfo"></el-input>
         </el-form-item>
         <el-form-item label="委托方简介:">
-          <el-input v-model.number="form.trustInfo"></el-input>
+          <Editor
+            @listenToDetail="getDetail1"
+            :description="form.trustInfo"
+            :uploadKey="'marketInfo1'"
+          ></Editor>
         </el-form-item>
         <el-form-item label="委托方简介记录日期:">
           <el-date-picker
-            v-model.number="form.trustInfoRecordDate"
+            v-model="form.trustInfoRecordDate"
             type="date"
             placeholder="选择日期时间"
           >
@@ -113,36 +139,15 @@
 
 <script>
 import { mapState, mapGetters } from 'vuex'
-import { addMoney, updateMoney } from '@/api/money'
 import AreaJson from '@/assets/datas/area.json'
 import { create, update } from '@/api/user'
 let moment = require('moment')
-import Editor from "@/components/editor";
+import Editor from '@/components/editor'
 
 import { getToken, setToken, removeToken } from '@/utils/auth'
 export default {
   name: 'addFundDialogs',
   data() {
-    let validateData = (rule, value, callback) => {
-      if (value === '') {
-        let text
-        if (rule.field == 'income') {
-          text = '收入'
-        } else if (rule.field == 'pay') {
-          text = '支出'
-        } else if (rule.field == 'accoutCash') {
-          text = '账户现金'
-        }
-        callback(new Error(text + '不能为空~'))
-      } else {
-        let numReg = /^[0-9]+.?[0-9]*$/
-        if (!numReg.test(value)) {
-          callback(new Error('请输入正数值'))
-        } else {
-          callback()
-        }
-      }
-    }
     return {
       fileList: [
         // {
@@ -159,6 +164,7 @@ export default {
       token: {
         Authorization: 'Bearer ' + getToken('Token'),
       },
+      imageUrl: '',
       areaData: [],
       isVisible: this.isShow,
       form: {
@@ -170,6 +176,8 @@ export default {
         bannerImg: '',
         /** 鉴定企业名称 */
         inspectionEnterprise: '',
+        //鉴定logo
+        inspectionEnterpriseLogo: '',
         /** 原产地 */
         sourceArea: '',
         /** 生产企业 */
@@ -220,15 +228,6 @@ export default {
         username: [
           { required: true, message: '用户名不能为空！', trigger: 'blur' },
         ],
-        income: [{ required: true, validator: validateData, trigger: 'blur' }],
-        pay: [{ required: true, validator: validateData, trigger: 'blur' }],
-        accoutCash: [
-          { required: true, validator: validateData, trigger: 'blur' },
-        ],
-        incomePayType: [
-          { required: true, message: '请选择收支类型', trigger: 'change' },
-        ],
-        address: [{ required: true, message: '请选择籍贯', trigger: 'change' }],
       },
       //详情弹框信息
       dialog: {
@@ -237,8 +236,8 @@ export default {
       },
     }
   },
-  components:{
-Editor
+  components: {
+    Editor,
   },
   props: {
     isShow: Boolean,
@@ -246,6 +245,9 @@ Editor
   },
   computed: {
     ...mapGetters(['addFundDialog']),
+    getImgBaseUrl() {
+      return localStorage.getItem('baseUrl')
+    },
   },
   created() {
     this.areaData = AreaJson
@@ -254,8 +256,16 @@ Editor
     if (this.addFundDialog.type === 'edit') {
       this.form = this.dialogRow
       console.log(this.form)
-      this.form.incomePayType = this.dialogRow.incomePayType.toString()
-      // this.form.address = ["120000", "120200", "120223"]
+      if (this.form.bannerImg) {
+        let imgs = this.form.bannerImg.split(',')
+
+        imgs.map((item) => {
+          this.fileList.push({
+            url: localStorage.getItem('baseUrl') + item,
+            url2: item,
+          })
+        })
+      }
     } else {
       this.$nextTick(() => {
         this.$refs['form'].resetFields()
@@ -265,12 +275,21 @@ Editor
   methods: {
     handleRemove(file, fileList) {
       console.log(file, fileList)
+      this.fileList = fileList
     },
-       getDetail(data) {
-      this.form.enterpriseInfo = data;
+    getDetail(data) {
+      this.form.enterpriseInfo = data
+    },
+    getDetail1(data) {
+      this.form.trustInfo = data
+    },
+    handleAvatarSuccess1(res, file) {
+      if (res.code == 0) {
+        this.form.inspectionEnterpriseLogo = res.data
+      }
     },
     handleAvatarSuccess(res, file) {
-      if (file.code == 0) {
+      if (res.code == 0) {
         this.fileList.push({
           url: localStorage.getItem('baseUrl') + res.data,
           url2: res.data,
@@ -280,13 +299,12 @@ Editor
       //   this.imageUrl = URL.createObjectURL(file.raw)
     },
     beforeAvatarUpload(file) {
-      const isJPG = file.type === 'image/jpeg'
-      const isLt2M = file.size / 1024 / 1024 < 1
+      const isLt2M = file.size / 1024 / 1024 < 5
 
       if (!isLt2M) {
-        this.$message.error('上传头像图片大小不能超过 1MB!')
+        this.$message.error('上传头像图片大小不能超过 5MB!')
       }
-      return isJPG && isLt2M
+      return isLt2M
     },
     handlePreview(file) {
       console.log(file)
@@ -316,7 +334,6 @@ Editor
       this.$refs[form].validate((valid) => {
         if (valid) {
           //表单数据验证完成之后，提交数据;
-          debugger
 
           let formData = this[form]
           let arrnew = this.fileList
@@ -369,6 +386,30 @@ Editor
 <style lang="less" scoped>
 .search_container {
   margin-bottom: 20px;
+}
+
+.avatar-uploader .el-upload {
+  border: 1px dashed #d9d9d9;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+.avatar-uploader .el-upload:hover {
+  border-color: #409eff;
+}
+.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 178px;
+  height: 178px;
+  line-height: 178px;
+  text-align: center;
+}
+.avatar {
+  width: 178px;
+  height: 178px;
+  display: block;
 }
 .btnRight {
   float: right;

@@ -2,13 +2,14 @@
   <div class="fillcontain">
     <search-item
       @showDialog="showAddFundDialog"
-      @searchList="getMoneyList"
+      @searchList="getproductList"
       @onBatchDelMoney="onBatchDelMoney"
     ></search-item>
     <div class="table_container">
       <el-table
         v-loading="loading"
         :data="tableData"
+        :row-style="{ height: '120px', 'max-height': '120px' }"
         style="width: 100%"
         align="center"
         @select="selectTable"
@@ -38,27 +39,85 @@
           width="80"
         >
         </el-table-column>
-        <el-table-column prop="productName" label="产品名称" align="center">
+
+        <el-table-column
+          prop="productName"
+          width="180"
+          label="产品名称"
+          align="center"
+        >
         </el-table-column>
-        <el-table-column prop="bannerImg" label="横幅图" align="center">
+
+        <el-table-column
+          prop="bannerImg"
+          width="180"
+          label="横幅图"
+          align="center"
+        >
+          <template slot-scope="scope">
+            <div class="banner-box">
+              <img
+                v-if="scope.row.bannerImg"
+                v-for="(item, index) in scope.row.bannerImg.split(',')"
+                class="banner"
+                :src="getImgBaseUrl + item"
+                alt=""
+              />
+            </div>
+          </template>
         </el-table-column>
         <el-table-column
           prop="inspectionEnterprise"
           label="鉴定企业名称"
+          width="180"
           align="center"
         >
         </el-table-column>
-        <el-table-column prop="sourceArea" label="原产地" align="center">
+        <el-table-column
+          prop="inspectionEnterpriseLogo"
+          label="鉴定企业logo"
+          width="180"
+          align="center"
+        >
+          <template slot-scope="scope">
+            <div class="banner-box">
+              <img
+                v-if="scope.row.inspectionEnterpriseLogo"
+                class="banner"
+                :src="getImgBaseUrl + scope.row.inspectionEnterpriseLogo"
+                alt=""
+              />
+            </div>
+          </template>
+        </el-table-column>
+
+        <el-table-column
+          prop="sourceArea"
+          width="180"
+          label="原产地"
+          align="center"
+        >
         </el-table-column>
         <el-table-column
           prop="produceEnterprise"
           label="生产企业"
+          width="200"
           align="center"
         >
         </el-table-column>
-        <el-table-column prop="trustCompany" label="委托单位" align="center">
+        <el-table-column
+          prop="trustCompany"
+          width="180"
+          label="委托单位"
+          align="center"
+        >
         </el-table-column>
-        <el-table-column prop="serialNo" label="序列号" align="center">
+        <el-table-column
+          prop="serialNo"
+          width="80"
+          label="序列号"
+          align="center"
+        >
         </el-table-column>
         <el-table-column
           prop="createTime"
@@ -77,21 +136,37 @@
         <el-table-column
           prop="inspectionResult"
           label="检验结论"
+          width="180"
           align="center"
         >
         </el-table-column>
-        <el-table-column prop="productRemark" label="产品备注" align="center">
+        <el-table-column
+          width="180"
+          prop="productRemark"
+          label="产品备注"
+          align="center"
+        >
         </el-table-column>
-        <el-table-column prop="enterpriseInfo" label="企业信息" align="center">
-
+        <el-table-column
+          width="450"
+          prop="enterpriseInfo"
+          label="企业信息"
+          align="center"
+        >
         </el-table-column>
         <el-table-column
           prop="qualificationInfo"
           label="资质信息"
+          width="450"
           align="center"
         >
         </el-table-column>
-        <el-table-column prop="trustInfo" label="委托方简介" align="center">
+        <el-table-column
+          prop="trustInfo"
+          width="450"
+          label="委托方简介"
+          align="center"
+        >
         </el-table-column>
         <el-table-column
           prop="createTime"
@@ -119,7 +194,16 @@
             <span style="margin-left: 10px">{{ scope.row.expireDate }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="traceLink" label="追溯链接" align="center">
+
+        <el-table-column
+          prop="traceLink"
+          label="追溯链接"
+          width="170"
+          align="center"
+        >
+          <template slot-scope="scope">
+            <a href="#">{{ scope.row.traceLink }}</a>
+          </template>
         </el-table-column>
         <el-table-column
           prop="operation"
@@ -154,7 +238,7 @@
         v-if="addFundDialog.show"
         :isShow="addFundDialog.show"
         :dialogRow="addFundDialog.dialogRow"
-        @getFundList="getMoneyList"
+        @getFundList="getproductList"
         @closeDialog="hideAddFundDialog"
       ></addFundDialog>
     </div>
@@ -168,8 +252,7 @@ import SearchItem from './components/searchItem'
 import AddFundDialog from './components/addFundDialog'
 import Pagination from '@/components/pagination'
 import { getproduct, deleteData } from '@/api/user'
-
-import { getMoneyIncomePay, removeMoney, batchremoveMoney } from '@/api/money'
+import { batchremoveMoney } from '@/api/money'
 
 export default {
   data() {
@@ -258,9 +341,12 @@ export default {
   },
   computed: {
     ...mapGetters(['search']),
+    getImgBaseUrl() {
+      return localStorage.getItem('baseUrl')
+    },
   },
   mounted() {
-    this.getMoneyList()
+    this.getproductList()
   },
   methods: {
     setAddress(value) {},
@@ -269,8 +355,7 @@ export default {
         this.tableHeight = document.body.clientHeight - 300
       })
     },
-    // 获取资金列表数据
-    getMoneyList() {
+    getproductList() {
       const para = {
         page: 0,
         size: 10,
@@ -292,12 +377,12 @@ export default {
     // 上下分页
     handleCurrentChange(val) {
       this.incomePayData.page = val
-      this.getMoneyList()
+      this.getproductList()
     },
     // 每页显示多少条
     handleSizeChange(val) {
       this.incomePayData.limit = val
-      this.getMoneyList()
+      this.getproductList()
     },
     getPay(val) {
       if (mutils.isInteger(val)) {
@@ -334,7 +419,7 @@ export default {
               message: '删除成功',
               type: 'success',
             })
-            this.getMoneyList()
+            this.getproductList()
           })
         })
         .catch(() => {})
@@ -351,7 +436,7 @@ export default {
               message: '批量删除成功',
               type: 'success',
             })
-            this.getMoneyList()
+            this.getproductList()
           })
         })
         .catch(() => {})
@@ -385,6 +470,15 @@ export default {
   padding: 10px;
   background: #fff;
   border-radius: 2px;
+}
+.banner-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  .banner {
+    height: 60px;
+  }
 }
 .el-dialog--small {
   width: 600px !important;

@@ -35,11 +35,14 @@ const user = {
     //登出
     LogOut({ commit, reqData }) {
       return new Promise((resolve, reject) => {
-        logout(reqData).then((response) => {
-          commit('SET_ROLES', [])
-          removeToken('Token')
-          resolve()
-        })
+        commit('SET_ROLES', [])
+        removeToken('Token')
+        resolve()
+        // logout(reqData).then((response) => {
+        //   commit('SET_ROLES', [])
+        //   removeToken('Token')
+        //   resolve()
+        // })
       })
     },
     // 动态修改权限;本实例中,role和token是相同的;

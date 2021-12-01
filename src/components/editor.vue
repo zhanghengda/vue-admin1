@@ -1,6 +1,10 @@
 <template>
   <div class="editor-box">
-    <quill-editor ref="myTextEditor" v-model="content" @change="onEditorChange($event)"></quill-editor>
+    <quill-editor
+      ref="myTextEditor"
+      v-model="content"
+      @change="onEditorChange($event)"
+    ></quill-editor>
   </div>
 </template>
 
@@ -68,11 +72,10 @@ quillEditor
       // parmas.append("key", this.uploadKey);
       // parmas.append("file", fileInput.files[0]);
 
-     
+
      upload(parmas).then(res => {
         this.$message.success("上传成功");
-        let data = sessionStorage.getItem('baseurl') + res.data.data;
-
+        let data = localStorage.getItem('baseUrl') + res.data;
         that.editor.insertEmbed(
           that.editor.getSelection().index,
           "image",

@@ -83,7 +83,7 @@
             <div class="banner-box">
               <img
                 v-if="scope.row.inspectionEnterpriseLogo"
-                class="banner"
+                class="logo-banner"
                 :src="getImgBaseUrl + scope.row.inspectionEnterpriseLogo"
                 alt=""
               />
@@ -93,7 +93,7 @@
 
         <el-table-column
           prop="sourceArea"
-          width="180"
+          width="80"
           label="原产地"
           align="center"
         >
@@ -147,7 +147,7 @@
           align="center"
         >
         </el-table-column>
-        <el-table-column
+        <!-- <el-table-column
           width="450"
           prop="enterpriseInfo"
           label="企业信息"
@@ -167,7 +167,7 @@
           label="委托方简介"
           align="center"
         >
-        </el-table-column>
+        </el-table-column> -->
         <el-table-column
           prop="createTime"
           label="委托方简介记录日期"
@@ -477,7 +477,10 @@ export default {
   align-items: center;
 
   .banner {
-    height: 60px;
+    height: 120px;
+  }
+  .logo-banner {
+    height: 120px;
   }
 }
 .el-dialog--small {

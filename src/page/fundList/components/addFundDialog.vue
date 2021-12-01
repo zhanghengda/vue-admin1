@@ -96,7 +96,11 @@
           ></Editor>
         </el-form-item>
         <el-form-item label="资质信息:">
-          <el-input v-model="form.qualificationInfo"></el-input>
+          <Editor
+            @listenToDetail="getDetail2"
+            :description="form.qualificationInfo"
+            :uploadKey="'marketInfo2'"
+          ></Editor>
         </el-form-item>
         <el-form-item label="委托方简介:">
           <Editor
@@ -207,17 +211,6 @@ export default {
         /** 追溯链接 */
         traceLink: '',
       },
-      payType: [
-        { label: '提现', value: '0' },
-        { label: '提现手续费', value: '1' },
-        { label: '提现锁定', value: '2' },
-        { label: '理财服务退出', value: '3' },
-        { label: '购买宜定盈', value: '4' },
-        { label: '充值', value: '5' },
-        { label: '优惠券', value: '6' },
-        { label: '充值礼券', value: '7' },
-        { label: '转账', value: '8' },
-      ],
       form_rules: {
         productNo: [
           { required: true, message: '产品编号不能为空！', trigger: 'blur' },
@@ -283,6 +276,10 @@ export default {
     getDetail1(data) {
       this.form.trustInfo = data
     },
+    getDetail2(data) {
+      this.form.qualificationInfo = data
+    },
+
     handleAvatarSuccess1(res, file) {
       if (res.code == 0) {
         this.form.inspectionEnterpriseLogo = res.data

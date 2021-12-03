@@ -127,7 +127,11 @@
         </el-form-item>
 
         <el-form-item label="产品备注:">
-          <el-input type="textarea" v-model="form.productRemark"></el-input>
+          <Editor
+            @listenToDetail="getDetail3"
+            :description="form.productRemark"
+            :uploadKey="'marketInfo3'"
+          ></Editor>
         </el-form-item>
         <el-form-item label="追溯链接:">
           <el-input v-model="form.traceLink"></el-input>
@@ -278,6 +282,9 @@ export default {
     },
     getDetail2(data) {
       this.form.qualificationInfo = data
+    },
+    getDetail3(data) {
+      this.form.productRemark = data
     },
 
     handleAvatarSuccess1(res, file) {

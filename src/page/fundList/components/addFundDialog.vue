@@ -136,6 +136,9 @@
         <el-form-item label="追溯链接:">
           <el-input v-model="form.traceLink"></el-input>
         </el-form-item>
+        <el-form-item label="是否发布正式:">
+          <el-checkbox v-model="form.isPublic"></el-checkbox>
+        </el-form-item>
         <el-form-item class="text_right">
           <el-button @click="isVisible = false">取 消</el-button>
           <el-button type="primary" @click="onSubmit('form')">提 交</el-button>
@@ -214,6 +217,7 @@ export default {
         createTime: '',
         /** 追溯链接 */
         traceLink: '',
+        isPublic: false,
       },
       form_rules: {
         productNo: [

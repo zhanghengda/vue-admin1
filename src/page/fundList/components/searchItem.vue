@@ -9,9 +9,23 @@
     >
       <el-form-item label="">
         <el-input
-          v-model="search_data.name"
-          placeholder="用户名"
-          @keyup.enter.native="onScreeoutMoney('search_data')"
+          v-model="search_data.productName"
+          placeholder="产品名称"
+          @keyup.enter.native="onSearch('search_data')"
+        ></el-input>
+      </el-form-item>
+      <el-form-item label="">
+        <el-input
+          v-model="search_data.productNo"
+          placeholder="溯源号码"
+          @keyup.enter.native="onSearch('search_data')"
+        ></el-input>
+      </el-form-item>
+      <el-form-item label="">
+        <el-input
+          v-model="search_data.identifyCode"
+          placeholder="防伪码"
+          @keyup.enter.native="onSearch('search_data')"
         ></el-input>
       </el-form-item>
       <el-form-item>
@@ -19,8 +33,15 @@
           type="primary"
           size="mini"
           icon="search"
-          @click="onScreeoutMoney('search_data')"
+          @click="onSearch('search_data')"
           >筛选</el-button
+        >
+        <el-button
+          type="primary"
+          size="mini"
+          icon="search"
+          @click="onClearSearch('search_data')"
+          >清除</el-button
         >
       </el-form-item>
 
@@ -29,12 +50,12 @@
           type="primary"
           size="mini"
           icon="view"
-          @click="onBatchDelMoney()"
+          @click="onBatchDelItem()"
           :disabled="searchBtnDisabled"
           >批量删除</el-button
         >
         <!-- <el-button type="success" size ="mini" icon="view">导出Elcel</el-button> -->
-        <el-button type="primary" size="mini" icon="view" @click="onAddMoney()"
+        <el-button type="primary" size="mini" icon="view" @click="onAddNew()"
           >添加</el-button
         >
       </el-form-item>
@@ -50,9 +71,9 @@ export default {
   data() {
     return {
       search_data: {
-        startTime: '',
-        endTime: '',
-        name: '',
+        productName: '',
+        productNo: '',
+        identifyCode: '',
       },
       rules: {
         name: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
@@ -64,7 +85,7 @@ export default {
   },
   created() {},
   methods: {
-    onScreeoutMoney(searchForm) {
+    onSearch(searchForm) {
       this.$refs[searchForm].validate((valid) => {
         if (valid) {
           this.$store.commit('SET_SEARCH', this.search_data)
@@ -72,11 +93,20 @@ export default {
         }
       })
     },
-    onAddMoney() {
+    onClearSearch() {
+      this.search_data = {
+        productName: '',
+        productNo: '',
+        identifyCode: '',
+      }
+      this.$store.commit('SET_SEARCH', this.search_data)
+      this.$emit('searchList')
+    },
+    onAddNew() {
       this.$emit('showDialog', 'add')
     },
-    onBatchDelMoney() {
-      this.$emit('onBatchDelMoney')
+    onBatchDelItem() {
+      this.$emit('onBatchDelItem')
     },
   },
 }

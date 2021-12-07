@@ -254,7 +254,7 @@ export default {
     this.areaData = AreaJson
   },
   mounted() {
-    if (this.addFundDialog.type === 'edit') {
+    if (this.addFundDialog.type === 'edit' || this.dialogRow) {
       this.form = this.dialogRow
       console.log(this.form)
       if (this.form.bannerImg) {

@@ -326,6 +326,14 @@ export default {
     },
     // 显示资金弹框
     showAddFundDialog(val) {
+      if (val == 'add' && this.tableData.length > 1) {
+        this.addFundDialog.dialogRow = {
+          ...this.tableData[this.tableData.length - 1],
+        }
+        this.addFundDialog.dialogRow.identifyCode = ''
+        this.addFundDialog.dialogRow.productNo = ''
+        this.addFundDialog.dialogRow.traceLink = ''
+      }
       this.$store.commit('SET_DIALOG_TITLE', val)
       this.addFundDialog.show = true
     },
@@ -353,7 +361,7 @@ export default {
     // 编辑操作方法
     onEdit(row) {
       this.addFundDialog.dialogRow = { ...row }
-      this.showAddFundDialog()
+      this.showAddFundDialog('edit')
     },
     // 删除数据
     onDelete(row) {

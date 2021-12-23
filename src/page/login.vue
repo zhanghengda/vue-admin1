@@ -97,11 +97,15 @@ export default {
       })
     },
     getbaseImg() {
-      baseimgUrl().then((res) => {
-        if (res.code == 0) {
-          localStorage.setItem('baseUrl', res.data)
-        }
-      })
+      if (location.hostname === 'localhost') {
+        baseimgUrl().then((res) => {
+          if (res.code == 0) {
+            localStorage.setItem('baseUrl', res.data)
+          }
+        })
+      } else {
+        localStorage.setItem('baseUrl', `https://${location.hostname}/img`)
+      }
     },
   },
 }

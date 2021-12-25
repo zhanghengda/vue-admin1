@@ -127,10 +127,17 @@
         </el-form-item>
 
         <el-form-item label="产品备注:">
-          <el-input type="textarea" v-model="form.productRemark"></el-input>
+          <Editor
+            @listenToDetail="getDetail3"
+            :description="form.productRemark"
+            :uploadKey="'marketInfo3'"
+          ></Editor>
         </el-form-item>
         <el-form-item label="追溯链接:">
           <el-input v-model="form.traceLink"></el-input>
+        </el-form-item>
+        <el-form-item label="是否发布正式:">
+          <el-checkbox v-model="form.isPublic"></el-checkbox>
         </el-form-item>
         <el-form-item class="text_right">
           <el-button @click="isVisible = false">取 消</el-button>
@@ -210,6 +217,7 @@ export default {
         createTime: '',
         /** 追溯链接 */
         traceLink: '',
+        isPublic: false,
       },
       form_rules: {
         productNo: [
@@ -246,7 +254,7 @@ export default {
     this.areaData = AreaJson
   },
   mounted() {
-    if (this.addFundDialog.type === 'edit') {
+    if (this.addFundDialog.type === 'edit' || this.dialogRow) {
       this.form = this.dialogRow
       console.log(this.form)
       if (this.form.bannerImg) {
@@ -278,6 +286,9 @@ export default {
     },
     getDetail2(data) {
       this.form.qualificationInfo = data
+    },
+    getDetail3(data) {
+      this.form.productRemark = data
     },
 
     handleAvatarSuccess1(res, file) {

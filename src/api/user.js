@@ -1,4 +1,5 @@
 import request from '@/utils/axios'
+import qs from 'qs'
 
 export function login(params) {
   return request({
@@ -10,7 +11,7 @@ export function login(params) {
 
 export function getproduct(params) {
   return request({
-    url: '/api/product/pages',
+    url: '/api/product/pages?' + qs.stringify(params),
     method: 'get',
     data: params,
   })

@@ -56,7 +56,7 @@ module.exports = {
     //       changeOrigin: true
     //   }
     // }
-    proxy: 'http://49.234.114.42',
+    proxy: 'https://qqqic.com',
   },
   // webpack相关配置
   chainWebpack: (config) => {

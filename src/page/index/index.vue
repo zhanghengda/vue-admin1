@@ -35,7 +35,9 @@
         >
           <template slot-scope="scope">
             <el-icon name="time"></el-icon>
-            <span style="margin-left: 10px"></span>
+            <span style="margin-left: 10px">{{
+              getTime(scope.row.createTime)
+            }}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -74,6 +76,7 @@
 <script>
 import Pagination from '@/components/pagination'
 import { consumerFeedback } from '@/api/user'
+let moment = require('moment')
 
 export default {
   data() {
@@ -87,6 +90,13 @@ export default {
         name: '',
       },
     }
+  },
+  computed: {
+    getTime() {
+      return (time) => {
+        return moment(time).format('YYYY-MM-DD HH:MM:SS')
+      }
+    },
   },
   components: {
     Pagination,

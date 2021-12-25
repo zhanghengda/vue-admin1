@@ -3,7 +3,7 @@
     <search-item
       @showDialog="showAddFundDialog"
       @searchList="getproductList"
-      @onBatchDelMoney="onBatchDelMoney"
+      @onBatchDelItem="onBatchDelItem"
     ></search-item>
     <div class="table_container">
       <el-table
@@ -253,6 +253,7 @@ import AddFundDialog from './components/addFundDialog'
 import Pagination from '@/components/pagination'
 import { getproduct, deleteData } from '@/api/user'
 import { batchremoveMoney } from '@/api/money'
+import qs from 'qs'
 
 export default {
   data() {
@@ -286,52 +287,6 @@ export default {
         name: '',
       },
       pageTotal: 0,
-      // 用于列表筛选
-      fields: {
-        incomePayType: {
-          filter: {
-            list: [
-              {
-                text: '提现',
-                value: 0,
-              },
-              {
-                text: '提现手续费',
-                value: 1,
-              },
-              {
-                text: '提现锁定',
-                value: 2,
-              },
-              {
-                text: '理财服务退出',
-                value: 3,
-              },
-              {
-                text: '购买宜定盈',
-                value: 4,
-              },
-              {
-                text: '充值',
-                value: 5,
-              },
-              {
-                text: '优惠券',
-                value: 6,
-              },
-              {
-                text: '充值礼券',
-                value: 7,
-              },
-              {
-                text: '转账',
-                value: 8,
-              },
-            ],
-            multiple: true,
-          },
-        },
-      },
     }
   },
   components: {
@@ -356,11 +311,14 @@ export default {
       })
     },
     getproductList() {
-      const para = {
+      const param = {
         page: 0,
         size: 10,
+        identifyCode: this.search.identifyCode,
+        productName: this.search.productName,
+        productNo: this.search.productNo,
       }
-      getproduct(para).then((res) => {
+      getproduct(param).then((res) => {
         this.loading = false
         this.pageTotal = res.data.totalElements
         this.tableData = res.data.content
@@ -368,6 +326,14 @@ export default {
     },
     // 显示资金弹框
     showAddFundDialog(val) {
+      if (val == 'add' && this.tableData.length > 1) {
+        this.addFundDialog.dialogRow = {
+          ...this.tableData[this.tableData.length - 1],
+        }
+        this.addFundDialog.dialogRow.identifyCode = ''
+        this.addFundDialog.dialogRow.productNo = ''
+        this.addFundDialog.dialogRow.traceLink = ''
+      }
       this.$store.commit('SET_DIALOG_TITLE', val)
       this.addFundDialog.show = true
     },
@@ -391,21 +357,11 @@ export default {
         return val
       }
     },
-    /**
-     * 格式化状态
-     */
-    formatterType(item) {
-      const type = parseInt(item.incomePayType)
-      return this.format_type_list[type]
-    },
-    filterType(value, item) {
-      const type = parseInt(item.incomePayType)
-      return this.format_type_list[value] == this.format_type_list[type]
-    },
+
     // 编辑操作方法
     onEdit(row) {
       this.addFundDialog.dialogRow = { ...row }
-      this.showAddFundDialog()
+      this.showAddFundDialog('edit')
     },
     // 删除数据
     onDelete(row) {
@@ -424,7 +380,7 @@ export default {
         })
         .catch(() => {})
     },
-    onBatchDelMoney() {
+    onBatchDelItem() {
       this.$confirm('确认批量删除记录吗?', '提示', {
         type: 'warning',
       })

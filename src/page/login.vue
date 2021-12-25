@@ -57,8 +57,8 @@ export default {
     return {
       logo: logoImg,
       loginForm: {
-        username: 'admin',
-        password: '123456',
+        username: '',
+        password: '',
       },
       rules: {
         username: [

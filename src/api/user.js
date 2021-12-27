@@ -55,7 +55,7 @@ export function update(params) {
 }
 export function deleteData(params) {
   return request({
-    url: '/api/product/delete',
+    url: '/api/product/delete?'+ qs.stringify(params),
     method: 'post',
     data: params,
   })

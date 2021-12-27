@@ -370,6 +370,7 @@ export default {
       })
         .then(() => {
           const para = { id: row.id }
+        
           deleteData(para).then((res) => {
             this.$message({
               message: '删除成功',

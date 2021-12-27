@@ -257,6 +257,11 @@ export default {
     if (this.addFundDialog.type === 'edit' || this.dialogRow) {
       this.form = this.dialogRow
       console.log(this.form)
+      this.form.inspectionDate = this.form.inspectionDate
+        ? this.form.inspectionDate.replace(/\./g, '-')
+        : ''
+      // this.form.trustInfoRecordDate='2021-12-03'
+
       if (this.form.bannerImg) {
         let imgs = this.form.bannerImg.split(',')
 
@@ -353,6 +358,7 @@ export default {
           formData.inspectionDate = moment(formData.inspectionDate).format(
             'YYYY-MM-DD'
           )
+          formData.inspectionDate = formData.inspectionDate.replace(/\-/g, '.')
           formData.trustInfoRecordDate = moment(
             formData.trustInfoRecordDate
           ).format('YYYY-MM-DD')

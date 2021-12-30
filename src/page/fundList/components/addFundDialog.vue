@@ -355,6 +355,8 @@ export default {
             })
             .join(',')
           formData.bannerImg = arrnew
+          formData.productNo=formData.productNo.replace(/\s/g,"")
+          formData.identifyCode=formData.identifyCode.replace(/\s/g,"")
           formData.inspectionDate = moment(formData.inspectionDate).format(
             'YYYY-MM-DD'
           )

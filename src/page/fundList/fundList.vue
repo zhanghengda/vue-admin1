@@ -231,6 +231,8 @@
       </el-table>
       <pagination
         :pageTotal="pageTotal"
+         :current-page='incomePayData.page'
+          :page-size="incomePayData.size"
         @handleCurrentChange="handleCurrentChange"
         @handleSizeChange="handleSizeChange"
       ></pagination>
@@ -282,8 +284,8 @@ export default {
         dialogRow: {},
       },
       incomePayData: {
-        page: 1,
-        limit: 20,
+        page: 0,
+        size: 20,
         name: '',
       },
       pageTotal: 0,
@@ -312,8 +314,8 @@ export default {
     },
     getproductList() {
       const param = {
-        page: 0,
-        size: 10,
+        page: this.incomePayData.page,
+        size: this.incomePayData.size,
         identifyCode: this.search.identifyCode,
         productName: this.search.productName,
         productNo: this.search.productNo,
@@ -328,7 +330,7 @@ export default {
     showAddFundDialog(val) {
       if (val == 'add' && this.tableData.length > 1) {
         this.addFundDialog.dialogRow = {
-          ...this.tableData[this.tableData.length - 1],
+          ...this.tableData[0],
         }
         this.addFundDialog.dialogRow.identifyCode = ''
         this.addFundDialog.dialogRow.productNo = ''
@@ -343,11 +345,12 @@ export default {
     // 上下分页
     handleCurrentChange(val) {
       this.incomePayData.page = val
+      console.log('val',val)
       this.getproductList()
     },
     // 每页显示多少条
     handleSizeChange(val) {
-      this.incomePayData.limit = val
+      this.incomePayData.size = val
       this.getproductList()
     },
     getPay(val) {

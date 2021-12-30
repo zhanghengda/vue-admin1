@@ -21,7 +21,7 @@
       data(){
           return {
             paginations: {
-                pageIndex: 1,  // 当前位于哪页
+                pageIndex: 0,  // 当前位于哪页
                 pageSize: 20,   // 1页显示多少条
                 pageSizes: [5, 10, 15, 20],  //每页显示多少条
                 layout: "total, sizes, prev, pager, next, jumper"   // 翻页属性
@@ -40,7 +40,8 @@
       methods:{ 
            // 上下分页 pageIndex
           handleCurrentChange(page){
-              this.$emit('handleCurrentChange',page);
+              let pagecurrent=page-1
+              this.$emit('handleCurrentChange',pagecurrent);
           },
            // 每页多少条切换 pageSize
           handleSizeChange(page_size){

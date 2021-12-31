@@ -139,6 +139,9 @@
         <el-form-item label="是否发布正式:">
           <el-checkbox v-model="form.isPublic"></el-checkbox>
         </el-form-item>
+        <el-form-item label="是否显示客服信息:">
+          <el-checkbox v-model="form.needTips"></el-checkbox>
+        </el-form-item>
         <el-form-item class="text_right">
           <el-button @click="isVisible = false">取 消</el-button>
           <el-button type="primary" @click="onSubmit('form')">提 交</el-button>
@@ -217,6 +220,7 @@ export default {
         createTime: '',
         /** 追溯链接 */
         traceLink: '',
+        needTips: true,
         isPublic: false,
       },
       form_rules: {
@@ -355,8 +359,8 @@ export default {
             })
             .join(',')
           formData.bannerImg = arrnew
-          formData.productNo=formData.productNo.replace(/\s/g,"")
-          formData.identifyCode=formData.identifyCode.replace(/\s/g,"")
+          formData.productNo = formData.productNo.replace(/\s/g, '')
+          formData.identifyCode = formData.identifyCode.replace(/\s/g, '')
           formData.inspectionDate = moment(formData.inspectionDate).format(
             'YYYY-MM-DD'
           )

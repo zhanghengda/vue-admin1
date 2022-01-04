@@ -67,6 +67,29 @@
           </template>
         </el-table-column>
         <el-table-column
+          prop="operation"
+          align="center"
+          label="操作"
+          width="180"
+        >
+          <template slot-scope="scope">
+            <el-button
+              type="warning"
+              icon="edit"
+              size="mini"
+              @click="onEdit(scope.row)"
+              >编辑</el-button
+            >
+            <el-button
+              type="danger"
+              icon="delete"
+              size="mini"
+              @click="onDelete(scope.row, scope.$index)"
+              >删除</el-button
+            >
+          </template>
+        </el-table-column>
+        <el-table-column
           prop="inspectionEnterprise"
           label="鉴定企业名称"
           width="180"
@@ -205,34 +228,11 @@
             <a href="#">{{ scope.row.traceLink }}</a>
           </template>
         </el-table-column>
-        <el-table-column
-          prop="operation"
-          align="center"
-          label="操作"
-          width="180"
-        >
-          <template slot-scope="scope">
-            <el-button
-              type="warning"
-              icon="edit"
-              size="mini"
-              @click="onEdit(scope.row)"
-              >编辑</el-button
-            >
-            <el-button
-              type="danger"
-              icon="delete"
-              size="mini"
-              @click="onDelete(scope.row, scope.$index)"
-              >删除</el-button
-            >
-          </template>
-        </el-table-column>
       </el-table>
       <pagination
         :pageTotal="pageTotal"
-         :current-page='incomePayData.page'
-          :page-size="incomePayData.size"
+        :current-page="incomePayData.page"
+        :page-size="incomePayData.size"
         @handleCurrentChange="handleCurrentChange"
         @handleSizeChange="handleSizeChange"
       ></pagination>
@@ -335,6 +335,7 @@ export default {
         this.addFundDialog.dialogRow.identifyCode = ''
         this.addFundDialog.dialogRow.productNo = ''
         this.addFundDialog.dialogRow.traceLink = ''
+        this.addFundDialog.dialogRow.bannerImg = ''
       }
       this.$store.commit('SET_DIALOG_TITLE', val)
       this.addFundDialog.show = true
@@ -345,7 +346,7 @@ export default {
     // 上下分页
     handleCurrentChange(val) {
       this.incomePayData.page = val
-      console.log('val',val)
+      console.log('val', val)
       this.getproductList()
     },
     // 每页显示多少条
@@ -373,7 +374,7 @@ export default {
       })
         .then(() => {
           const para = { id: row.id }
-        
+
           deleteData(para).then((res) => {
             this.$message({
               message: '删除成功',

@@ -18,13 +18,17 @@
         <el-form-item prop="productNo" label="溯源号码:">
           <el-input type="text" v-model="form.productNo"></el-input>
         </el-form-item>
-        <el-form-item prop="identifyCode" label="防伪码（4位）:">
+        <!-- <el-form-item prop="identifyCode" label="防伪码（4位）:">
           <el-input type="text" v-model="form.identifyCode"></el-input>
-        </el-form-item>
+        </el-form-item> -->
 
         <el-form-item label="产品名称:">
           <el-input type="text" v-model="form.productName"></el-input>
         </el-form-item>
+        <el-form-item label="产品状态描述:">
+          <el-input type="text" v-model="form.remarkTitle"></el-input>
+        </el-form-item>
+        
         <el-form-item label="横幅图">
           <el-upload
             class="upload-demo"
@@ -186,6 +190,7 @@ export default {
       isVisible: this.isShow,
       form: {
         productNo: '',
+        remarkTitle:'',
         identifyCode: '',
         /** 产品名称 */
         productName: '',
@@ -364,7 +369,7 @@ export default {
             .join(',')
           formData.bannerImg = arrnew
           formData.productNo = formData.productNo.replace(/\s/g, '')
-          formData.identifyCode = formData.identifyCode.replace(/\s/g, '')
+          // formData.identifyCode = formData.identifyCode.replace(/\s/g, '')
           formData.inspectionDate = moment(formData.inspectionDate).format(
             'YYYY-MM-DD'
           )

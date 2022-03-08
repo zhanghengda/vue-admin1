@@ -11,7 +11,7 @@ export function login(params) {
 
 export function getproduct(params) {
   return request({
-    url: '/api/product/pages?' + qs.stringify(params),
+    url: '/api/product_scan/pages?' + qs.stringify(params),
     method: 'get',
     data: params,
   })
@@ -26,7 +26,7 @@ export function baseimgUrl(params) {
 }
 export function create(params) {
   return request({
-    url: '/api/product/create',
+    url: '/api/product_scan/create',
     method: 'post',
     data: params,
   })
@@ -48,14 +48,14 @@ export function consumerFeedback(params) {
 
 export function update(params) {
   return request({
-    url: '/api/product/update',
+    url: '/api/product_scan/update',
     method: 'post',
     data: params,
   })
 }
 export function deleteData(params) {
   return request({
-    url: '/api/product/delete?'+ qs.stringify(params),
+    url: '/api/product_scan/delete?'+ qs.stringify(params),
     method: 'post',
     data: params,
   })

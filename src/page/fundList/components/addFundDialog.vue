@@ -141,7 +141,7 @@
           <el-input v-model="form.traceLink"></el-input>
         </el-form-item>
         <el-form-item label="是否发布正式:">
-          <el-checkbox v-model="form.isPublic"></el-checkbox>
+          <el-checkbox v-model="form.isPublish"></el-checkbox>
         </el-form-item>
         <el-form-item label="是否显示客服信息:">
           <el-checkbox v-model="form.needTips"></el-checkbox>

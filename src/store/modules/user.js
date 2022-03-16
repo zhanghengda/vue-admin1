@@ -8,7 +8,7 @@ const user = {
     avatar: '',
     token: getToken('Token'),
     roles: [],
-    browserHeaderTitle: mUtils.getStore('browserHeaderTitle') || '追溯Admin',
+    browserHeaderTitle: mUtils.getStore('browserHeaderTitle') || '鉴定Admin',
   },
   getters: {
     token: (state) => state.token,

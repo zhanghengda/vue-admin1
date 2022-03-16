@@ -4,7 +4,7 @@
       <section class="form_contianer">
         <div class="titleArea rflex">
           <img class="logo" :src="logo" alt="小爱admin" />
-          <span class="title">追溯<i>Admin</i></span>
+          <span class="title">鉴定<i>Admin</i></span>
         </div>
         <el-form
           :model="loginForm"

@@ -1,7 +1,7 @@
 const zh = {
   // layout
   commons: {
-    zhuisu: '追溯',
+    zhuisu: '鉴定',
     admin: '管理员',
     editor: '赵晓编',
     quit: '退出',

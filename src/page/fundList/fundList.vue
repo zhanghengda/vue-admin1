@@ -224,7 +224,19 @@
             <span style="margin-left: 10px">{{ scope.row.expireDate }}</span>
           </template>
         </el-table-column>
-
+        <el-table-column
+          prop="createTime"
+          label="创建时间"
+          align="center"
+          sortable
+          width="170"
+        >
+          <template slot-scope="scope">
+            <el-icon name="time"></el-icon>
+            <span style="margin-left: 10px">{{               getTime(scope.row.createTime)
+ }}</span>
+          </template>
+        </el-table-column>
         <el-table-column
           prop="traceLink"
           label="追溯链接"
@@ -261,8 +273,8 @@ import SearchItem from "./components/searchItem";
 import AddFundDialog from "./components/addFundDialog";
 import Pagination from "@/components/pagination";
 import { getproduct, deleteData } from "@/api/user";
-import { batchremoveMoney } from "@/api/money";
-import qs from "qs";
+
+let moment = require('moment')
 
 export default {
   data() {
@@ -307,6 +319,11 @@ export default {
     ...mapGetters(["search"]),
     getImgBaseUrl() {
       return localStorage.getItem("baseUrl");
+    },
+     getTime() {
+      return (time) => {
+        return moment(time).format('YYYY-MM-DD HH:MM:SS')
+      }
     },
   },
   mounted() {

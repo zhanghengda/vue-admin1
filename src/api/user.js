@@ -40,7 +40,7 @@ export function upload(params) {
 }
 export function consumerFeedback(params) {
   return request({
-    url: '/api/consumerFeedback/pages',
+    url: '/api/consumerFeedbackScan/pages',
     method: 'get',
     data: params,
   })

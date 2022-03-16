@@ -217,7 +217,20 @@
             <span style="margin-left: 10px">{{ scope.row.expireDate }}</span>
           </template>
         </el-table-column>
-
+        <el-table-column
+          prop="createTime"
+          label="创建时间"
+          align="center"
+          sortable
+          width="170"
+        >
+          <template slot-scope="scope">
+            <el-icon name="time"></el-icon>
+            <span style="margin-left: 10px">{{
+              getTime(scope.row.createTime)
+            }}</span>
+          </template>
+        </el-table-column>
         <el-table-column
           prop="traceLink"
           label="追溯链接"
@@ -248,14 +261,15 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
-import * as mutils from '@/utils/mUtils'
-import SearchItem from './components/searchItem'
-import AddFundDialog from './components/addFundDialog'
-import Pagination from '@/components/pagination'
-import { getproduct, deleteData } from '@/api/user'
-import { batchremoveMoney } from '@/api/money'
-import qs from 'qs'
+import { mapGetters } from "vuex";
+import * as mutils from "@/utils/mUtils";
+import SearchItem from "./components/searchItem";
+import AddFundDialog from "./components/addFundDialog";
+import Pagination from "@/components/pagination";
+import { getproduct, deleteData } from "@/api/user";
+import { batchremoveMoney } from "@/api/money";
+import qs from "qs";
+let moment = require('moment')
 
 export default {
   data() {
@@ -265,19 +279,19 @@ export default {
       loading: true,
       idFlag: false,
       isShow: false, // 是否显示资金modal,默认为false
-      editid: '',
+      editid: "",
       rowIds: [],
       sortnum: 0,
       format_type_list: {
-        0: '提现',
-        1: '提现手续费',
-        2: '提现锁定',
-        3: '理财服务退出',
-        4: '购买宜定盈',
-        5: '充值',
-        6: '优惠券',
-        7: '充值礼券',
-        8: '转账',
+        0: "提现",
+        1: "提现手续费",
+        2: "提现锁定",
+        3: "理财服务退出",
+        4: "购买宜定盈",
+        5: "充值",
+        6: "优惠券",
+        7: "充值礼券",
+        8: "转账",
       },
       addFundDialog: {
         show: false,
@@ -286,10 +300,10 @@ export default {
       incomePayData: {
         page: 0,
         size: 20,
-        name: '',
+        name: "",
       },
       pageTotal: 0,
-    }
+    };
   },
   components: {
     SearchItem,
@@ -297,20 +311,25 @@ export default {
     Pagination,
   },
   computed: {
-    ...mapGetters(['search']),
+    ...mapGetters(["search"]),
     getImgBaseUrl() {
-      return localStorage.getItem('baseUrl')
+      return localStorage.getItem("baseUrl");
+    },
+      getTime() {
+      return (time) => {
+        return moment(time).format('YYYY-MM-DD HH:MM:SS')
+      }
     },
   },
   mounted() {
-    this.getproductList()
+    this.getproductList();
   },
   methods: {
     setAddress(value) {},
     setTableHeight() {
       this.$nextTick(() => {
-        this.tableHeight = document.body.clientHeight - 300
-      })
+        this.tableHeight = document.body.clientHeight - 300;
+      });
     },
     getproductList() {
       const param = {
@@ -319,111 +338,111 @@ export default {
         identifyCode: this.search.identifyCode,
         productName: this.search.productName,
         productNo: this.search.productNo,
-      }
+      };
       getproduct(param).then((res) => {
-        this.loading = false
-        this.pageTotal = res.data.totalElements
-        this.tableData = res.data.content
-      })
+        this.loading = false;
+        this.pageTotal = res.data.totalElements;
+        this.tableData = res.data.content;
+      });
     },
     // 显示资金弹框
     showAddFundDialog(val) {
-      if (val == 'add' && this.tableData.length > 1) {
+      if (val == "add" && this.tableData.length > 1) {
         this.addFundDialog.dialogRow = {
           ...this.tableData[0],
-        }
-        this.addFundDialog.dialogRow.identifyCode = ''
-        this.addFundDialog.dialogRow.productNo = ''
-        this.addFundDialog.dialogRow.traceLink = ''
-        this.addFundDialog.dialogRow.bannerImg = ''
+        };
+        this.addFundDialog.dialogRow.identifyCode = "";
+        this.addFundDialog.dialogRow.productNo = "";
+        this.addFundDialog.dialogRow.traceLink = "";
+        this.addFundDialog.dialogRow.bannerImg = "";
       }
-      this.$store.commit('SET_DIALOG_TITLE', val)
-      this.addFundDialog.show = true
+      this.$store.commit("SET_DIALOG_TITLE", val);
+      this.addFundDialog.show = true;
     },
     hideAddFundDialog() {
-      this.addFundDialog.show = false
+      this.addFundDialog.show = false;
     },
     // 上下分页
     handleCurrentChange(val) {
-      this.incomePayData.page = val
-      console.log('val', val)
-      this.getproductList()
+      this.incomePayData.page = val;
+      console.log("val", val);
+      this.getproductList();
     },
     // 每页显示多少条
     handleSizeChange(val) {
-      this.incomePayData.size = val
-      this.getproductList()
+      this.incomePayData.size = val;
+      this.getproductList();
     },
     getPay(val) {
       if (mutils.isInteger(val)) {
-        return -val
+        return -val;
       } else {
-        return val
+        return val;
       }
     },
 
     // 编辑操作方法
     onEdit(row) {
-      this.addFundDialog.dialogRow = { ...row }
-      this.showAddFundDialog('edit')
+      this.addFundDialog.dialogRow = { ...row };
+      this.showAddFundDialog("edit");
     },
     // 删除数据
     onDelete(row) {
-      this.$confirm('确认删除该记录吗?', '提示', {
-        type: 'warning',
+      this.$confirm("确认删除该记录吗?", "提示", {
+        type: "warning",
       })
         .then(() => {
-          const para = { id: row.id }
+          const para = { id: row.id };
 
           deleteData(para).then((res) => {
             this.$message({
-              message: '删除成功',
-              type: 'success',
-            })
-            this.getproductList()
-          })
+              message: "删除成功",
+              type: "success",
+            });
+            this.getproductList();
+          });
         })
-        .catch(() => {})
+        .catch(() => {});
     },
     onBatchDelItem() {
-      this.$confirm('确认批量删除记录吗?', '提示', {
-        type: 'warning',
+      this.$confirm("确认批量删除记录吗?", "提示", {
+        type: "warning",
       })
         .then(() => {
-          const ids = this.rowIds.map((item) => item.id).toString()
-          const para = { ids: ids }
+          const ids = this.rowIds.map((item) => item.id).toString();
+          const para = { ids: ids };
           batchremoveMoney(para).then((res) => {
             this.$message({
-              message: '批量删除成功',
-              type: 'success',
-            })
-            this.getproductList()
-          })
+              message: "批量删除成功",
+              type: "success",
+            });
+            this.getproductList();
+          });
         })
-        .catch(() => {})
+        .catch(() => {});
     },
     // 当用户手动勾选数据行的 Checkbox 时触发的事件
     selectTable(val, row) {
-      this.setSearchBtn(val)
+      this.setSearchBtn(val);
     },
     // 用户全选checkbox时触发该事件
     selectAll(val) {
       val.forEach((item) => {
-        this.rowIds.push(item.id)
-      })
-      this.setSearchBtn(val)
+        this.rowIds.push(item.id);
+      });
+      this.setSearchBtn(val);
     },
     setSearchBtn(val) {
-      let isFlag = true
+      let isFlag = true;
       if (val.length > 0) {
-        isFlag = false
+        isFlag = false;
       } else {
-        isFlag = true
+        isFlag = true;
       }
-      this.$store.commit('SET_SEARCHBTN_DISABLED', isFlag)
+      this.$store.commit("SET_SEARCHBTN_DISABLED", isFlag);
     },
   },
-}
+};
 </script>
 
 <style lang="less" scoped>

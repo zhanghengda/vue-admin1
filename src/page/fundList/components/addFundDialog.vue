@@ -380,8 +380,6 @@ export default {
           formData.expireDate = moment(formData.expireDate).format(
             'YYYY-MM-DD HH:MM:SS'
           )
-          formData.productRemark =
-            '<p><span style="color: #686681;">1、检验结果仅对送检样品负责，显示内容无效；</span></p><p><span style="color: #686681;">2、若对显示的内容和结论持有异议，需在检验日期后15日内提出，逾期不予受理；</span></p><p><span style="color: #686681;">3、品牌方为商品的设计及制造方，如品牌方确认该鉴定样品为品牌方制造及销售商品，以品牌方的结论为准；</span></p><p><span style="color: #686681;">4、客户信息及样品均由委托单位提供，检验结果不涉及样品品质检测等信息。</span></p>'
           const para = Object.assign({}, formData)
           console.log(para)
           // edit

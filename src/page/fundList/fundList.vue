@@ -39,7 +39,20 @@
           width="80"
         >
         </el-table-column> -->
-
+        <el-table-column
+          prop="createTime"
+          label="创建时间"
+          align="center"
+          sortable
+          width="170"
+        >
+          <template slot-scope="scope">
+            <el-icon name="time"></el-icon>
+            <span style="margin-left: 10px">{{
+              getTime(scope.row.createTime)
+            }}</span>
+          </template>
+        </el-table-column>
         <el-table-column
           prop="productName"
           width="180"
@@ -224,19 +237,7 @@
             <span style="margin-left: 10px">{{ scope.row.expireDate }}</span>
           </template>
         </el-table-column>
-        <el-table-column
-          prop="createTime"
-          label="创建时间"
-          align="center"
-          sortable
-          width="170"
-        >
-          <template slot-scope="scope">
-            <el-icon name="time"></el-icon>
-            <span style="margin-left: 10px">{{               getTime(scope.row.createTime)
- }}</span>
-          </template>
-        </el-table-column>
+
         <el-table-column
           prop="traceLink"
           label="追溯链接"
@@ -274,7 +275,7 @@ import AddFundDialog from "./components/addFundDialog";
 import Pagination from "@/components/pagination";
 import { getproduct, deleteData } from "@/api/user";
 
-let moment = require('moment')
+let moment = require("moment");
 
 export default {
   data() {
@@ -320,10 +321,10 @@ export default {
     getImgBaseUrl() {
       return localStorage.getItem("baseUrl");
     },
-     getTime() {
+    getTime() {
       return (time) => {
-        return moment(time).format('YYYY-MM-DD HH:MM:SS')
-      }
+        return moment(time).format("YYYY-MM-DD HH:MM:SS");
+      };
     },
   },
   mounted() {
@@ -351,7 +352,7 @@ export default {
     },
     // 显示资金弹框
     showAddFundDialog(val) {
-      if (val == "add" && this.tableData.length > 1) {
+      if (val == "add" && this.tableData.length > 0) {
         this.addFundDialog.dialogRow = {
           ...this.tableData[0],
         };

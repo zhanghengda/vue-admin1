@@ -13,7 +13,7 @@ service.interceptors.request.use(
   (config) => {
     // if (store.getters.token) {
     config.headers = {
-      Authorization: 'Bearer ' + getToken('Token'), //携带权限参数
+      token: getToken('Token'), //携带权限参数
     }
     // }
     return config
@@ -30,9 +30,10 @@ service.interceptors.response.use(
      * code:200,接口正常返回;
      */
     const res = response.data
+
     if (res.code !== 0) {
       Message({
-        message: res.message,
+        message: res.desc,
         type: 'error',
         duration: 5 * 1000,
       })

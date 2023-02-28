@@ -159,15 +159,15 @@
 </template>
 
 <script>
-import { mapState, mapGetters } from "vuex";
-import AreaJson from "@/assets/datas/area.json";
-import { create, update } from "@/api/user";
-let moment = require("moment");
-import Editor from "@/components/editor";
+import { mapState, mapGetters } from 'vuex'
+import AreaJson from '@/assets/datas/area.json'
+import { create, update } from '@/api/user'
+let moment = require('moment')
+import Editor from '@/components/editor'
 
-import { getToken, setToken, removeToken } from "@/utils/auth";
+import { getToken, setToken, removeToken } from '@/utils/auth'
 export default {
-  name: "addFundDialogs",
+  name: 'addFundDialogs',
   data() {
     return {
       fileList: [
@@ -183,72 +183,72 @@ export default {
         // },
       ],
       token: {
-        Authorization: "Bearer " + getToken("Token"),
+        Authorization: 'Bearer ' + getToken('Token'),
       },
-      imageUrl: "",
+      imageUrl: '',
       areaData: [],
       isVisible: this.isShow,
       form: {
-        productNo: "",
-        remarkTitle: "",
-        identifyCode: "",
+        productNo: '',
+        remarkTitle: '',
+        identifyCode: '',
         /** 产品名称 */
-        productName: "",
+        productName: '',
         /** 横幅图 */
-        bannerImg: "",
+        bannerImg: '',
         /** 鉴定企业名称 */
-        inspectionEnterprise: "",
+        inspectionEnterprise: '',
         //鉴定logo
-        inspectionEnterpriseLogo: "",
+        inspectionEnterpriseLogo: '',
         /** 原产地 */
-        sourceArea: "",
+        sourceArea: '',
         /** 生产企业 */
-        produceEnterprise: "",
+        produceEnterprise: '',
         /** 委托单位 */
-        trustCompany: "",
+        trustCompany: '',
         /** 序列号 */
-        serialNo: "",
+        serialNo: '',
         /** 检验日期 */
-        inspectionDate: "",
+        inspectionDate: '',
         /** 检验结论 */
-        inspectionResult: "",
+        inspectionResult: '',
         /** 产品备注 */
-        productRemark: "",
+        productRemark: '',
         /** 企业信息 */
-        enterpriseInfo: "",
+        enterpriseInfo: '',
         /** 资质信息 */
-        qualificationInfo: "",
+        qualificationInfo: '',
         /** 委托方简介 */
-        trustInfo: "",
+        trustInfo: '',
         /** 委托方简介记录日期 */
-        trustInfoRecordDate: "",
+        trustInfoRecordDate: '',
         /** 到期日期 */
-        expireDate: "",
+        expireDate: '',
         /** 创建时间 */
-        createTime: "",
+        createTime: '',
         /** 追溯链接 */
-        traceLink: "",
+        traceLink: '',
         needTips: true,
         needQrCode: true,
         isPublic: false,
       },
       form_rules: {
         productNo: [
-          { required: true, message: "产品编号不能为空！", trigger: "blur" },
+          { required: true, message: '产品编号不能为空！', trigger: 'blur' },
         ],
         identifyCode: [
-          { required: true, message: "防伪码不能为空！", trigger: "blur" },
+          { required: true, message: '防伪码不能为空！', trigger: 'blur' },
         ],
         username: [
-          { required: true, message: "用户名不能为空！", trigger: "blur" },
+          { required: true, message: '用户名不能为空！', trigger: 'blur' },
         ],
       },
       //详情弹框信息
       dialog: {
-        width: "400px",
-        formLabelWidth: "120px",
+        width: '400px',
+        formLabelWidth: '120px',
       },
-    };
+    }
   },
   components: {
     Editor,
@@ -258,103 +258,103 @@ export default {
     dialogRow: Object,
   },
   computed: {
-    ...mapGetters(["addFundDialog"]),
+    ...mapGetters(['addFundDialog']),
     getImgBaseUrl() {
-      return localStorage.getItem("baseUrl");
+      return localStorage.getItem('baseUrl')
     },
   },
   created() {
-    this.areaData = AreaJson;
+    this.areaData = AreaJson
   },
   mounted() {
-    let _this = this;
-    if (this.addFundDialog.type === "edit" || this.dialogRow) {
-      _this.form = _this.dialogRow;
-      console.log(this.form);
+    let _this = this
+    if (this.addFundDialog.type === 'edit' || this.dialogRow) {
+      _this.form = _this.dialogRow
+      console.log(this.form)
       _this.form.inspectionDate = _this.form.inspectionDate
-        ? _this.form.inspectionDate.replace(/\./g, "-")
-        : "";
+        ? _this.form.inspectionDate.replace(/\./g, '-')
+        : ''
       // this.form.trustInfoRecordDate='2021-12-03'
 
       if (this.form.bannerImg) {
-        let imgs = this.form.bannerImg.split(",");
+        let imgs = this.form.bannerImg.split(',')
 
         imgs.map((item) => {
           this.fileList.push({
-            url: localStorage.getItem("baseUrl") + item,
+            url: localStorage.getItem('baseUrl') + item,
             url2: item,
-          });
-        });
+          })
+        })
       }
     } else {
       this.$nextTick(() => {
-        this.$refs["form"].resetFields();
-      });
+        this.$refs['form'].resetFields()
+      })
     }
   },
   methods: {
     handleRemove(file, fileList) {
-      console.log(file, fileList);
-      this.fileList = fileList;
+      console.log(file, fileList)
+      this.fileList = fileList
     },
     getDetail(data) {
-      this.form.enterpriseInfo = data;
+      this.form.enterpriseInfo = data
     },
     getDetail1(data) {
-      this.form.trustInfo = data;
+      this.form.trustInfo = data
     },
     getDetail2(data) {
-      this.form.qualificationInfo = data;
+      this.form.qualificationInfo = data
     },
     getDetail3(data) {
-      this.form.productRemark = data;
+      this.form.productRemark = data
     },
 
     handleAvatarSuccess1(res, file) {
       if (res.code == 0) {
-        this.form.inspectionEnterpriseLogo = res.data;
+        this.form.inspectionEnterpriseLogo = res.data
       }
     },
     handleAvatarSuccess(res, file) {
       if (res.code == 0) {
         this.fileList.push({
-          url: localStorage.getItem("baseUrl") + res.data,
+          url: localStorage.getItem('baseUrl') + res.data,
           url2: res.data,
-        });
-        console.log(file, res, this.fileList);
+        })
+        console.log(file, res, this.fileList)
       }
       //   this.imageUrl = URL.createObjectURL(file.raw)
     },
     beforeAvatarUpload(file) {
-      const isLt2M = file.size / 1024 / 1024 < 5;
+      const isLt2M = file.size / 1024 / 1024 < 5
 
       if (!isLt2M) {
-        this.$message.error("上传头像图片大小不能超过 5MB!");
+        this.$message.error('上传头像图片大小不能超过 5MB!')
       }
-      return isLt2M;
+      return isLt2M
     },
     handlePreview(file) {
-      console.log(file);
+      console.log(file)
     },
     getCascaderObj(val, opt) {
       return val.map(function(value, index, array) {
         for (var item of opt) {
           if (item.value == value) {
-            opt = item.children;
-            return item.label;
+            opt = item.children
+            return item.label
           }
         }
-        return null;
-      });
+        return null
+      })
     },
     handleChange(value) {
-      console.log([...value]); // ["120000", "120200", "120223"]
-      this.form.address = [...value];
-      let vals = this.getCascaderObj([...value], this.areaData); // arr
-      this.form.tableAddress = vals.join(",").replace(/,/g, "");
+      console.log([...value]) // ["120000", "120200", "120223"]
+      this.form.address = [...value]
+      let vals = this.getCascaderObj([...value], this.areaData) // arr
+      this.form.tableAddress = vals.join(',').replace(/,/g, '')
     },
     closeDialog() {
-      this.$emit("closeDialog");
+      this.$emit('closeDialog')
     },
     //表单提交
     onSubmit(form) {
@@ -362,55 +362,55 @@ export default {
         if (valid) {
           //表单数据验证完成之后，提交数据;
 
-          let formData = this[form];
+          let formData = this[form]
           let arrnew = this.fileList
             .map((obj, index) => {
-              return obj.url2;
+              return obj.url2
             })
-            .join(",");
-          formData.bannerImg = arrnew;
-          formData.productNo = formData.productNo.replace(/\s/g, "");
+            .join(',')
+          formData.bannerImg = arrnew
+          formData.productNo = formData.productNo.replace(/\s/g, '')
           // formData.identifyCode = formData.identifyCode.replace(/\s/g, '')
           formData.inspectionDate = moment(formData.inspectionDate).format(
-            "YYYY-MM-DD"
-          );
+            'YYYY-MM-DD'
+          )
           // formData.inspectionDate = formData.inspectionDate.replace(/\-/g, '.')
           formData.trustInfoRecordDate = moment(
             formData.trustInfoRecordDate
-          ).format("YYYY-MM-DD");
+          ).format('YYYY-MM-DD')
           formData.expireDate = moment(formData.expireDate).format(
-            "YYYY-MM-DD HH:MM:SS"
-          );
-          const para = Object.assign({}, formData);
-          console.log(para);
+            'YYYY-MM-DD HH:MM:SS'
+          )
+          const para = Object.assign({}, formData)
+          console.log(para)
           // edit
-          if (this.addFundDialog.type === "edit") {
+          if (this.addFundDialog.type === 'edit') {
             update(para).then((res) => {
               this.$message({
-                message: "修改成功",
-                type: "success",
-              });
-              this.$refs["form"].resetFields();
-              this.isVisible = false;
-              this.$emit("getFundList");
-            });
+                message: '修改成功',
+                type: 'success',
+              })
+              this.$refs['form'].resetFields()
+              this.isVisible = false
+              this.$emit('getFundList')
+            })
           } else {
             // add
             create(para).then((res) => {
               this.$message({
-                message: "新增成功",
-                type: "success",
-              });
-              this.$refs["form"].resetFields();
-              this.isVisible = false;
-              this.$emit("getFundList");
-            });
+                message: '新增成功',
+                type: 'success',
+              })
+              this.$refs['form'].resetFields()
+              this.isVisible = false
+              this.$emit('getFundList')
+            })
           }
         }
-      });
+      })
     },
   },
-};
+}
 </script>
 
 <style lang="less" scoped>

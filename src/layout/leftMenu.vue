@@ -6,9 +6,9 @@
         :src="logo"
         alt="鉴定admin"
       />
-      <span class="title" v-show="sidebar.opened"
-        >{{ $t('commons.zhuisu') }}<i>Admin</i></span
-      >
+      <span class="title" v-show="sidebar.opened">{{
+        $t('commons.zhuisu')
+      }}</span>
     </div>
     <div class="menu_page_bottom is-scroll-left">
       <el-menu

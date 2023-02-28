@@ -2,33 +2,39 @@
   <div class="fillcontain">
     <div class="table_container">
       <el-table v-loading="loading" :data="tableData" style="width: 100%">
-        <el-table-column
-          prop="name"
-          label="反馈人姓名"
-          align="center"
-          width="80"
-        >
-        </el-table-column>
-        <el-table-column
-          prop="phone"
-          label="联系电话"
-          align="center"
-          width="80"
-        >
+        <el-table-column prop="name" label="名称" align="center" width="80">
         </el-table-column>
 
-        <el-table-column prop="email" width="180" label="邮箱" align="center">
+        <el-table-column prop="href" width="180" label="地址" align="center">
+        </el-table-column>
+
+        <el-table-column
+          prop="bannerImg"
+          width="120"
+          label="logo"
+          align="center"
+        >
+          <template slot-scope="scope">
+            <div class="banner-box">
+              <img
+                v-if="scope.row.logoUrl"
+                class="banner"
+                :src="scope.row.logoUrl"
+                alt=""
+              />
+            </div>
+          </template>
         </el-table-column>
         <el-table-column
           width="180"
-          prop="content"
+          prop="intro"
           label="产品备注"
           align="center"
         >
         </el-table-column>
         <el-table-column
           prop="createTime"
-          label="反馈日期"
+          label="创建时间"
           align="center"
           sortable
           width="170"
@@ -75,7 +81,7 @@
 
 <script>
 import Pagination from '@/components/pagination'
-import { consumerFeedback } from '@/api/user'
+import { consumerFeedback, mggamelist } from '@/api/user'
 let moment = require('moment')
 
 export default {
@@ -118,13 +124,25 @@ export default {
     },
     getFeedbackList() {
       const para = {
-        page: 0,
-        size: 20,
+        pageNum: 0,
+        pageSize: 20,
+        searchKey: '',
+        // catetoryId:'',
+        // status:'',
+        // domainId:'',
+        // domainId:'',
       }
-      consumerFeedback(para).then((res) => {
-        this.loading = false
-        this.pageTotal = res.data.totalElements
-        this.tableData = res.data.content
+      mggamelist(para).then((res) => {
+        if (res.code == 0) {
+          this.loading = false
+          this.pageTotal = res.data.total
+          this.tableData = res.data.records
+        } else {
+          this.$message({
+            message: res.desc,
+            type: 'error',
+          })
+        }
       })
     },
   },

@@ -13,7 +13,7 @@
             <el-submenu index="2" popper-class="infoItem">
               <template slot="title">
                 <div class="welcome">
-                  <span class="name">鉴定,</span>
+                  <span class="name">FGAMES,</span>
                   <span class="name avatarname"> {{ name }}</span>
                 </div>
                 <img :src="logo" class="avatar" alt="" />

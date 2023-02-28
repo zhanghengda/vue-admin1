@@ -1,13 +1,15 @@
 const zh = {
   // layout
   commons: {
-    zhuisu: '鉴定',
+    zhuisu: 'FGAMES',
     admin: '管理员',
     editor: '赵晓编',
     quit: '退出',
     hi: '您好',
     index: '首页',
     userManage: '用户管理',
+    classify: '分类配置',
+    domain: '域名配置',
     share: '分享功能',
     infoManage: '信息管理',
     infoShow: '个人信息',
@@ -20,8 +22,8 @@ const zh = {
     infoModify1: '修改信息子菜单1',
     infoModify2: '修改信息子菜单2',
     infoModify3: '修改信息子菜单3',
-    fundManage: '产品管理',
-    fundList: '产品列表',
+    fundManage: '系统管理',
+    fundList: '游戏配置',
     chinaTabsList: '区域投资',
     fundData: '资金数据',
     fundPosition: '投资分布',

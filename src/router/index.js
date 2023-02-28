@@ -53,7 +53,7 @@ export const constantRouterMap = [
     name: 'index',
     component: Layout,
     meta: {
-      title: '首页',
+      title: '游戏配置',
       icon: 'icondashboard',
     },
     noDropdown: true,
@@ -61,7 +61,7 @@ export const constantRouterMap = [
       {
         path: 'index',
         meta: {
-          title: '首页',
+          title: '游戏配置',
           icon: 'icondashboard',
           routerType: 'admin',
         },
@@ -69,57 +69,11 @@ export const constantRouterMap = [
       },
     ],
   },
-
-  // {
-  //   path: '/infoManage',
-  //   name: 'infoManage',
-  //   meta: {
-  //     title: '信息管理',
-  //     icon: 'iconinfo',
-  //   },
-  //   component: Layout,
-  //   children: [
-  //     {
-  //       path: 'infoShow',
-  //       name: 'infoShow',
-  //       meta: {
-  //         title: '个人信息',
-  //         icon: 'iconinfo',
-  //         routerType: 'admin',
-  //         titleList: [
-  //           { path: 'infoShow1', title: '个人信息子菜单1' },
-  //           { path: 'infoShow2', title: '个人信息子菜单2' },
-  //           { path: 'infoShow3', title: '个人信息子菜单3' },
-  //           { path: 'infoShow4', title: '个人信息子菜单4' },
-  //           { path: 'infoShow5', title: '个人信息子菜单5' },
-  //         ],
-  //       },
-  //       component: Content,
-  //       children: filterTopRouterMap('infoShow'),
-  //     },
-  //     {
-  //       path: 'infoModify',
-  //       name: 'infoModify',
-  //       meta: {
-  //         title: '修改信息',
-  //         icon: 'iconinfo',
-  //         routerType: 'admin',
-  //         titleList: [
-  //           { path: 'infoModify1', title: '修改信息子菜单1' },
-  //           { path: 'infoModify2', title: '修改信息子菜单2' },
-  //           { path: 'infoModify3', title: '修改信息子菜单3' },
-  //         ],
-  //       },
-  //       component: Content,
-  //       children: filterTopRouterMap('infoModify'),
-  //     },
-  //   ],
-  // },
   {
     path: '/fundManage',
     name: 'fundManage',
     meta: {
-      title: '产品管理',
+      title: '系统管理',
       icon: 'iconpay3',
     },
     component: Layout,
@@ -128,10 +82,28 @@ export const constantRouterMap = [
         path: 'fundList',
         name: 'fundList',
         meta: {
-          title: '产品列表',
+          title: '游戏配置',
           routerType: 'admin',
         },
         component: () => import('@/page/fundList/fundList'),
+      },
+      {
+        path: 'classify',
+        name: 'classify',
+        meta: {
+          title: '分类配置',
+          routerType: 'admin',
+        },
+        component: () => import('@/page/fundList/classify'),
+      },1
+      {
+        path: 'domain',
+        name: 'domain',
+        meta: {
+          title: '域名配置',
+          routerType: 'admin',
+        },
+        component: () => import('@/page/fundList/domain'),
       },
     ],
   },

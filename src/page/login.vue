@@ -4,7 +4,7 @@
       <section class="form_contianer">
         <div class="titleArea rflex">
           <img class="logo" :src="logo" alt="小爱admin" />
-          <span class="title">鉴定<i>Admin</i></span>
+          <span class="title">FGAMES </span>
         </div>
         <el-form
           :model="loginForm"
@@ -12,24 +12,24 @@
           ref="loginForm"
           class="loginForm"
         >
-          <el-form-item prop="username" class="login-item">
+          <el-form-item prop="loginName" class="login-item">
             <span class="loginTips"><icon-svg icon-class="iconuser"/></span>
             <el-input
               @keyup.enter.native="submitForm('loginForm')"
               class="area"
               type="text"
               placeholder="用户名"
-              v-model="loginForm.username"
+              v-model="loginForm.loginName"
             ></el-input>
           </el-form-item>
-          <el-form-item prop="password" class="login-item">
+          <el-form-item prop="loginPwd" class="login-item">
             <span class="loginTips"><icon-svg icon-class="iconLock"/></span>
             <el-input
               @keyup.enter.native="submitForm('loginForm')"
               class="area"
               type="password"
               placeholder="密码"
-              v-model="loginForm.password"
+              v-model="loginForm.loginPwd"
             ></el-input>
           </el-form-item>
           <el-form-item>
@@ -51,21 +51,22 @@ import logoImg from '@/assets/img/logo.png'
 import { login, baseimgUrl } from '@/api/user'
 import { setToken } from '@/utils/auth'
 import { mapGetters, mapMutations } from 'vuex'
+import CryptoJS from 'crypto-js' //加密
 
 export default {
   data() {
     return {
       logo: logoImg,
       loginForm: {
-        username: '',
-        password: '',
+        loginName: 'admin',
+        loginPwd: 'a123456',
       },
       rules: {
-        username: [
+        loginName: [
           { required: true, message: '请输入用户名', trigger: 'blur' },
           { min: 2, max: 8, message: '长度在 2 到 8 个字符', trigger: 'blur' },
         ],
-        password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
+        loginPwd: [{ required: true, message: '请输入密码', trigger: 'blur' }],
       },
     }
   },
@@ -85,10 +86,12 @@ export default {
       let _this = this
       this.$refs[loginForm].validate((valid) => {
         if (valid) {
+          let pd5 = CryptoJS.MD5(this.loginForm.loginPwd).toString()
+          this.loginForm.loginPwd = pd5
           let userinfo = this.loginForm
           login(userinfo).then((res) => {
             setToken('Token', res.data.token)
-            this.getbaseImg()
+            // this.getbaseImg()
             this.$router.push({ path: '/' })
 
             this.$store.dispatch('initLeftMenu') //设置左边菜单始终为展开状态

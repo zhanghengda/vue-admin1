@@ -95,7 +95,7 @@ export const constantRouterMap = [
           routerType: 'admin',
         },
         component: () => import('@/page/fundList/classify'),
-      },1
+      },
       {
         path: 'domain',
         name: 'domain',

@@ -38,7 +38,7 @@ const cdn = {
 }
 
 module.exports = {
-  publicPath: process.env.NODE_ENV === 'production' ? '/appraisal/' : '/',
+  publicPath: process.env.NODE_ENV === 'production' ? '/' : '/',
   outputDir: './dist',
   assetsDir: 'static',
   filenameHashing: true, // false 来关闭文件名哈希

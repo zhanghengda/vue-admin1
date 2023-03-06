@@ -21,10 +21,10 @@ const money = {
   mutations: {
     SET_DIALOG_TITLE: (state, type) => {
       if (type === 'add') {
-        state.addFundDialog.title = '新增产品'
+        state.addFundDialog.title = '新增'
         state.addFundDialog.type = 'add'
       } else {
-        state.addFundDialog.title = '编辑产品'
+        state.addFundDialog.title = '编辑'
         state.addFundDialog.type = 'edit'
       }
     },

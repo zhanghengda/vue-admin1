@@ -65,7 +65,7 @@ export const constantRouterMap = [
           icon: 'icondashboard',
           routerType: 'admin',
         },
-        component: () => import('@/page/index/index'),
+        component: () => import('@/page/fundList/fundList'),
       },
     ],
   },
@@ -142,8 +142,8 @@ export const constantRouterMap = [
 
 //注册路由
 export default new Router({
-  mode: 'history', // 默认为'hash'模式
-  base: '/appraisal/', // 添加跟目录,对应服务器部署子目录
+  // mode: 'history', // 默认为'hash'模式
+  // base: '/appraisal/', // 添加跟目录,对应服务器部署子目录
   routes: constantRouterMap,
 })
 

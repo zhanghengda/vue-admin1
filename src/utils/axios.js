@@ -83,4 +83,41 @@ service.interceptors.response.use(
   }
 )
 
+/* 上传文件 */
+export function fetchUpload(url, formData) {
+  url = url + suffix
+  return new Promise((resolve, reject) => {
+    instance
+      .post(url, formData, {
+        contentType: false,
+        processData: false,
+      })
+      .then((response) => {
+        resolve(response.data)
+      })
+      .catch((error) => {
+        // reject(error);
+        info(error)
+        resolve({
+          ok: false,
+          msg: '请求超时，请重试',
+        })
+      })
+  })
+}
+/* 下载文件 */
+export function getFile(url) {
+  const headers = { token: getToken('Token') }
+  return new Promise((resolve, reject) => {
+    axios
+      .get(url, { responseType: 'arraybuffer', responseType: 'blob', headers })
+      .then((res) => {
+        resolve(res.data)
+      })
+      .catch((err) => {
+        error(err)
+      })
+  })
+}
+
 export default service

@@ -9,22 +9,36 @@
     >
       <el-form-item label="">
         <el-input
-          v-model="search_data.productName"
-          placeholder="产品名称"
+          v-model="search_data.searchKey"
+          placeholder="游戏名称"
+          v-if="isGameNameShow"
           @keyup.enter.native="onSearch('search_data')"
         ></el-input>
       </el-form-item>
       <el-form-item label="">
         <el-input
-          v-model="search_data.productNo"
-          placeholder="溯源号码"
+          v-model="search_data.searchKey"
+          placeholder="域名名称"
+          v-if="isDomainShow"
           @keyup.enter.native="onSearch('search_data')"
         ></el-input>
+      </el-form-item>
+      <el-form-item label="游戏分类：">
+        <el-select v-model="search_data.categoryId" placeholder="请选择">
+          <el-option
+            v-for="item in categorys"
+            :key="item.id"
+            :label="item.category"
+            :value="item.id"
+          >
+          </el-option>
+        </el-select>
       </el-form-item>
       <el-form-item label="">
         <el-input
           v-model="search_data.identifyCode"
-          placeholder="防伪码"
+          placeholder="状态"
+          v-if="isGameStatusShow"
           @keyup.enter.native="onSearch('search_data')"
         ></el-input>
       </el-form-item>
@@ -33,13 +47,15 @@
           type="primary"
           size="mini"
           icon="search"
+          v-if="isFilterShow"
           @click="onSearch('search_data')"
-          >筛选</el-button
+          >查询</el-button
         >
         <el-button
           type="primary"
           size="mini"
           icon="search"
+          v-if="isSearchShow"
           @click="onClearSearch('search_data')"
           >清除</el-button
         >
@@ -50,11 +66,55 @@
           type="primary"
           size="mini"
           icon="view"
+          v-if="isExportShow"
+          @click="onExportItem()"
+          >导入游戏</el-button
+        >
+        <el-button
+          type="primary"
+          size="mini"
+          icon="view"
+          v-if="isAllShow"
+          @click="onBatchUpItem(1)"
+          :disabled="searchBtnDisabled"
+          >批量上线</el-button
+        >
+        <el-button
+          type="primary"
+          size="mini"
+          icon="view"
+          v-if="isAllShow"
+          @click="onBatchUpItem(2)"
+          :disabled="searchBtnDisabled"
+          >批量下线</el-button
+        >
+        <el-button
+          type="primary"
+          size="mini"
+          icon="view"
+          v-if="isTagShow"
+          @click="onBatchtagItem()"
+          :disabled="searchBtnDisabled"
+          >批量打标签</el-button
+        >
+
+        <el-button
+          type="primary"
+          size="mini"
+          icon="view"
+          v-if="isAllShow"
           @click="onBatchDelItem()"
           :disabled="searchBtnDisabled"
           >批量删除</el-button
         >
-        <!-- <el-button type="success" size ="mini" icon="view">导出Elcel</el-button> -->
+        <el-button
+          type="success"
+          size="mini"
+          v-if="isDownShow"
+          @click="todownloadtemplate"
+          icon="view"
+          >下载模板</el-button
+        >
         <el-button type="primary" size="mini" icon="view" @click="onAddNew()"
           >添加</el-button
         >
@@ -65,16 +125,33 @@
 
 <script>
 import { mapGetters } from 'vuex'
-
+import { mggameupdate, mggameadd, categorylist } from '@/api/user'
 export default {
   name: 'searchItem',
+  props: {
+    isAllShow: Boolean,
+    isGameNameShow: Boolean,
+    isGameUrlShow: Boolean,
+    isGameCatetoryShow: Boolean,
+    isGameStatusShow: Boolean,
+    isFilterShow: Boolean,
+    isSearchShow: Boolean,
+    isSearchShow: Boolean,
+    isDownShow: Boolean,
+    isUpShow: Boolean,
+    isTagShow: Boolean,
+    isExportShow: Boolean,
+    isDomainShow: Boolean,
+  },
   data() {
     return {
       search_data: {
         productName: '',
         productNo: '',
+        categoryId: '',
         identifyCode: '',
       },
+      categorys: [],
       rules: {
         name: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
       },
@@ -83,7 +160,9 @@ export default {
   computed: {
     ...mapGetters(['searchBtnDisabled']),
   },
-  created() {},
+  created() {
+    this.oncategorylist()
+  },
   methods: {
     onSearch(searchForm) {
       this.$refs[searchForm].validate((valid) => {
@@ -91,6 +170,17 @@ export default {
           this.$store.commit('SET_SEARCH', this.search_data)
           this.$emit('searchList')
         }
+      })
+    },
+
+    //获取分类
+    oncategorylist() {
+      const param = {
+        pageNum: 0,
+        pageSize: 100,
+      }
+      categorylist(param).then((res) => {
+        this.categorys = res.data.records
       })
     },
     onClearSearch() {
@@ -102,11 +192,23 @@ export default {
       this.$store.commit('SET_SEARCH', this.search_data)
       this.$emit('searchList')
     },
+    todownloadtemplate() {
+      this.$emit('todownloadtemplate')
+    },
     onAddNew() {
       this.$emit('showDialog', 'add')
     },
     onBatchDelItem() {
       this.$emit('onBatchDelItem')
+    },
+    onBatchUpItem(type) {
+      this.$emit('onBatchUpItem', type)
+    },
+    onExportItem() {
+      this.$emit('onExportItem')
+    },
+    onBatchtagItem() {
+      this.$emit('onBatchtagItem')
     },
   },
 }
@@ -114,6 +216,7 @@ export default {
 
 <style lang="less" scoped>
 .search_container {
+  height: 100%;
   margin-bottom: 20px;
 }
 .btnRight {

@@ -3,7 +3,23 @@
     <search-item
       @showDialog="showAddFundDialog"
       @searchList="getproductList"
+      isAllShow
+      isGameNameShow
+      isGameUrlShow
+      isGameCatetoryShow
+      isGameStatusShow
+      isFilterShow
+      isSearchShow
+      isUpShow
+      isDownShow
+      isTagShow
+      isExportShow
+      isDomainShow
+      @todownloadtemplate="todownloadtemplate"
+      @onBatchUpItem="onBatchUpItem"
+      @onBatchtagItem="onBatchtagItem"
       @onBatchDelItem="onBatchDelItem"
+      @onExportItem="onExportItem"
     ></search-item>
     <div class="table_container">
       <el-table
@@ -15,18 +31,27 @@
         @select="selectTable"
         @select-all="selectAll"
       >
-        <el-table-column prop="name" label="名称" align="center" width="80">
-        </el-table-column>
-
-        <el-table-column prop="href" width="180" label="地址" align="center">
-        </el-table-column>
-
         <el-table-column
-          prop="bannerImg"
-          width="120"
-          label="logo"
+          v-if="idFlag"
+          prop="id"
+          label="id"
+          align="center"
+          width="80"
+        >
+        </el-table-column>
+        <el-table-column type="selection" align="center" width="60">
+        </el-table-column>
+        <el-table-column prop="name" label="游戏名称" align="center" width="80">
+        </el-table-column>
+        <el-table-column
+          prop="intro"
+          width="180"
+          label="游戏介绍"
           align="center"
         >
+        </el-table-column>
+
+        <el-table-column prop="logoUrl" width="120" label="logo" align="center">
           <template slot-scope="scope">
             <div class="banner-box">
               <img
@@ -38,12 +63,55 @@
             </div>
           </template>
         </el-table-column>
+        <el-table-column width="100" label="游戏打分" align="center">
+          <template slot-scope="scope">
+            <div>{{ scope.row.star }}分</div>
+          </template>
+        </el-table-column>
+
+        <el-table-column prop="tags" width="100" label="标签" align="center">
+        </el-table-column>
+
         <el-table-column
-          width="180"
-          prop="intro"
-          label="产品备注"
+          prop="categoryId"
+          width="100"
+          label="游戏分类"
           align="center"
         >
+        </el-table-column>
+        <el-table-column
+          prop="href"
+          width="180"
+          label="游戏链接"
+          align="center"
+        >
+        </el-table-column>
+        <el-table-column
+          prop="href"
+          width="180"
+          label="发布域名"
+          align="center"
+        >
+          <template slot-scope="scope">
+            <div v-if="scope.row.domains">
+              <p v-for="item in scope.row.domains">{{ item.domain }}</p>
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column width="180" label="状态" align="center">
+          <template slot-scope="scope">
+            <div>
+              <span>
+                {{
+                  scope.row.status == 0
+                    ? '未上架'
+                    : scope.row.status == 0
+                    ? '已上架'
+                    : '已下架'
+                }}</span
+              >
+            </div>
+          </template>
         </el-table-column>
         <el-table-column
           prop="createTime"
@@ -59,11 +127,12 @@
             }}</span>
           </template>
         </el-table-column>
+
         <el-table-column
           prop="operation"
           align="center"
           label="操作"
-          width="180"
+          width="280"
         >
           <template slot-scope="scope">
             <el-button
@@ -80,145 +149,14 @@
               @click="onDelete(scope.row, scope.$index)"
               >删除</el-button
             >
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="inspectionEnterprise"
-          label="鉴定企业名称"
-          width="180"
-          align="center"
-        >
-        </el-table-column>
-        <!-- <el-table-column
-          prop="inspectionEnterpriseLogo"
-          label="鉴定企业logo"
-          width="180"
-          align="center"
-        >
-          <template slot-scope="scope">
-            <div class="banner-box">
-              <img
-                v-if="scope.row.inspectionEnterpriseLogo"
-                class="logo-banner"
-                :src="getImgBaseUrl + scope.row.inspectionEnterpriseLogo"
-                alt=""
-              />
-            </div>
-          </template>
-        </el-table-column> -->
 
-        <el-table-column
-          prop="sourceArea"
-          width="80"
-          label="原产地"
-          align="center"
-        >
-        </el-table-column>
-        <el-table-column
-          prop="produceEnterprise"
-          label="生产企业"
-          width="200"
-          align="center"
-        >
-        </el-table-column>
-        <el-table-column
-          prop="trustCompany"
-          width="180"
-          label="委托单位"
-          align="center"
-        >
-        </el-table-column>
-        <el-table-column
-          prop="serialNo"
-          width="80"
-          label="序列号"
-          align="center"
-        >
-        </el-table-column>
-        <el-table-column
-          prop="createTime"
-          label="检验日期"
-          align="center"
-          sortable
-          width="170"
-        >
-          <template slot-scope="scope">
-            <el-icon name="time"></el-icon>
-            <span style="margin-left: 10px">{{
-              scope.row.inspectionDate
-            }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="inspectionResult"
-          label="检验结论"
-          width="180"
-          align="center"
-        >
-        </el-table-column>
-        <el-table-column
-          width="180"
-          prop="productRemark"
-          label="产品备注"
-          align="center"
-        >
-        </el-table-column>
-        <!-- <el-table-column
-          width="450"
-          prop="enterpriseInfo"
-          label="企业信息"
-          align="center"
-        >
-        </el-table-column>
-        <el-table-column
-          prop="qualificationInfo"
-          label="资质信息"
-          width="450"
-          align="center"
-        >
-        </el-table-column>
-        <el-table-column
-          prop="trustInfo"
-          width="450"
-          label="委托方简介"
-          align="center"
-        >
-        </el-table-column> -->
-        <el-table-column
-          prop="createTime"
-          label="委托方简介记录日期"
-          align="center"
-          sortable
-          width="170"
-        >
-          <template slot-scope="scope">
-            <el-icon name="time"></el-icon>
-            <span style="margin-left: 10px">{{
-              scope.row.trustInfoRecordDate
-            }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="createTime"
-          label="到期日期"
-          align="center"
-          sortable
-          width="170"
-        >
-          <template slot-scope="scope">
-            <el-icon name="time"></el-icon>
-            <span style="margin-left: 10px">{{ scope.row.expireDate }}</span>
-          </template>
-        </el-table-column>
-
-        <el-table-column
-          prop="traceLink"
-          label="追溯链接"
-          width="170"
-          align="center"
-        >
-          <template slot-scope="scope">
-            <a href="#">{{ scope.row.traceLink }}</a>
+            <el-button
+              type="success"
+              icon="delete"
+              size="mini"
+              @click="onEdit(scope.row)"
+              >配置 游戏</el-button
+            >
           </template>
         </el-table-column>
       </el-table>
@@ -236,6 +174,116 @@
         @getFundList="getproductList"
         @closeDialog="hideAddFundDialog"
       ></addFundDialog>
+      <!-- 批量上传-->
+      <el-dialog
+        :visible.sync="isUpDownShow"
+        :title="upDowntitle"
+        :close-on-click-modal="false"
+        :close-on-press-escape="false"
+        :modal-append-to-body="false"
+        @close="toCloseUp"
+      >
+        <div class="form">
+          <el-form
+            ref="form"
+            :model="form"
+            label-width="170px"
+            :rules="form_rules"
+            style="margin:10px;width:auto;"
+          >
+            <el-form-item prop="domains" label="上下线域名:">
+              <el-checkbox-group v-model="form.domains">
+                <el-checkbox
+                  :label="item.domain"
+                  :v-model="item.id"
+                  v-for="(item, index) in domains"
+                  :key="item.id"
+                ></el-checkbox>
+              </el-checkbox-group>
+            </el-form-item>
+
+            <el-form-item class="text_right">
+              <el-button @click="isUpDownShow = false">取 消</el-button>
+              <el-button type="primary" @click="onUpSubmit('form')"
+                >提 交</el-button
+              >
+            </el-form-item>
+          </el-form>
+        </div>
+      </el-dialog>
+
+      <!-- 批量 标签-->
+      <el-dialog
+        :visible.sync="isTagsShow"
+        :title="tagtitle"
+        :close-on-click-modal="false"
+        :close-on-press-escape="false"
+        :modal-append-to-body="false"
+        @close="toCloseUp"
+      >
+        <div class="form">
+          <el-form
+            ref="form"
+            :model="form"
+            label-width="170px"
+            :rules="form_rules"
+            style="margin:10px;width:auto;"
+          >
+            <el-form-item prop="domains" label="选择标签:">
+              <el-checkbox-group v-model="form.tags">
+                <el-checkbox
+                  :label="item"
+                  :v-model="item"
+                  v-for="(item, index) in tags"
+                  :key="item"
+                ></el-checkbox>
+              </el-checkbox-group>
+            </el-form-item>
+
+            <el-form-item class="text_right">
+              <el-button @click="isTagsShow = false">取 消</el-button>
+              <el-button type="primary" @click="onTagSubmit('form')"
+                >提 交</el-button
+              >
+            </el-form-item>
+          </el-form>
+        </div>
+      </el-dialog>
+
+      <!-- 批量 标签-->
+      <el-dialog
+        :visible.sync="isExportShow"
+        title="导入游戏"
+        :close-on-click-modal="false"
+        :close-on-press-escape="false"
+        :modal-append-to-body="false"
+        @close="toCloseUp"
+      >
+        <div class="form">
+          <el-form
+            ref="form"
+            :model="form"
+            label-width="170px"
+            :rules="form_rules"
+            style="margin:10px;width:auto;"
+          >
+            <el-form-item prop="domains" label="选择文件:">
+              <el-upload
+                class="upload-demo"
+                :headers="token"
+                :on-success="handleAvatarSuccess1"
+                action="/gs/mg/game/importexcel"
+                :file-list="fileList"
+              >
+                <el-button size="small" type="primary">点击上传</el-button>
+                <div slot="tip" class="el-upload__tip">
+                  只能上传下载模板文件
+                </div>
+              </el-upload>
+            </el-form-item>
+          </el-form>
+        </div>
+      </el-dialog>
     </div>
   </div>
 </template>
@@ -246,13 +294,31 @@ import * as mutils from '@/utils/mUtils'
 import SearchItem from './components/searchItem'
 import AddFundDialog from './components/addFundDialog'
 import Pagination from '@/components/pagination'
-import { getproduct, deleteData, mggamelist } from '@/api/user'
+
+import { getToken, setToken, removeToken } from '@/utils/auth'
+
+import {
+  getproduct,
+  deleteData,
+  downloadtemplate,
+  gamedel,
+  mggamesetdgstatus,
+  mggameupdatetags,
+  upload,
+  mgdomainlist,
+  mggamelist,
+} from '@/api/user'
 
 let moment = require('moment')
 
 export default {
   data() {
     return {
+      isUpDownShow: false,
+      isTagsShow: false,
+      isExportShow: false,
+      upDowntitle: '批量上线',
+      tagtitle: '批量打标签',
       tableData: [],
       tableHeight: 0,
       loading: true,
@@ -260,7 +326,17 @@ export default {
       isShow: false, // 是否显示资金modal,默认为false
       editid: '',
       rowIds: [],
+      fileList: [],
       sortnum: 0,
+      form: {
+        domains: [],
+        tags: [],
+      },
+      token: {
+        token: getToken('Token'),
+      },
+      tags: ['new', 'hot'],
+      domains: [],
       format_type_list: {
         0: '提现',
         1: '提现手续费',
@@ -271,6 +347,15 @@ export default {
         6: '优惠券',
         7: '充值礼券',
         8: '转账',
+      },
+      form_rules: {
+        domains: [
+          { required: true, message: '选择上线域名！', trigger: 'blur' },
+        ],
+      },
+      uploadparams: {
+        type: 1,
+        mode: 2,
       },
       addFundDialog: {
         show: false,
@@ -302,6 +387,7 @@ export default {
   },
   mounted() {
     this.getproductList()
+    this.getdomainList()
   },
   methods: {
     setAddress(value) {},
@@ -315,7 +401,7 @@ export default {
         pageNum: this.incomePayData.page,
         pageSize: this.incomePayData.size,
         searchKey: '',
-        // catetoryId:'',
+        catetoryId: '',
         // status:'',
         // domainId:'',
         // domainId:'',
@@ -326,17 +412,106 @@ export default {
         this.tableData = res.data.records
       })
     },
+    getdomainList() {
+      const param = {
+        pageNum: 0,
+        pageSize: 100,
+        searchKey: '',
+        // catetoryId:'',
+        // status:'',
+        // domainId:'',
+        // domainId:'',
+      }
+      mgdomainlist(param).then((res) => {
+        this.domains = res.data.records
+      })
+    },
+    handleAvatarSuccess1(res, file) {
+      this.getproductList()
+      this.$message({
+        message: '导入成功',
+        type: 'success',
+      })
+      this.isExportShow = false
+    },
+    onExportSubmit(form) {},
+    //表单提交
+    onTagSubmit(form) {
+      //表单数据验证完成之后，提交数据;
+
+      let _this = this
+      let formData = this[form]
+      if (formData.tags.length == 0) {
+        this.$message({
+          message: '请选择域名',
+          type: 'error',
+        })
+        return
+      }
+
+      this.$confirm('确认批量设置选择游戏标签吗?', '提示', {
+        type: 'warning',
+      })
+        .then(() => {
+          const ids = _this.rowIds
+          let tags = formData.tags.join(',')
+          const para = { paramIds: ids, tags: tags }
+
+          mggameupdatetags(para).then((res) => {
+            _this.$message({
+              message: '批量操作成功',
+              type: 'success',
+            })
+            _this.rowIds = []
+            _this.getproductList()
+            _this.isTagsShow = false
+          })
+        })
+        .catch(() => {})
+    },
+    //表单提交
+    onUpSubmit(form) {
+      //表单数据验证完成之后，提交数据;
+      let formData = this[form]
+
+      let _this = this
+
+      if (formData.domains.length == 0) {
+        this.$message({
+          message: '请选择域名',
+          type: 'error',
+        })
+        return
+      }
+      this.$confirm('确认批量上线选择游戏吗?', '提示', {
+        type: 'warning',
+      })
+        .then(() => {
+          const ids = _this.rowIds
+          let domainIds = []
+          formData.domains.map((t) => {
+            domainIds.push(this.domains.find((d) => d.domain == t).id)
+          })
+          const para = { paramIds: ids, status: 1, domainIds: domainIds }
+          mggamesetdgstatus(para).then((res) => {
+            _this.$message({
+              message: '批量操作成功',
+              type: 'success',
+            })
+            _this.getproductList()
+            _this.rowIds = []
+            _this.isUpDownShow = false
+          })
+        })
+        .catch(() => {})
+    },
+    toCloseUp() {
+      this.isUpDownShow = false
+      this.isTagsShow = false
+      this.isExportShow = false
+    },
     // 显示资金弹框
     showAddFundDialog(val) {
-      if (val == 'add' && this.tableData.length > 0) {
-        this.addFundDialog.dialogRow = {
-          ...this.tableData[0],
-        }
-        // this.addFundDialog.dialogRow.identifyCode = "";
-        this.addFundDialog.dialogRow.productNo = ''
-        this.addFundDialog.dialogRow.traceLink = ''
-        this.addFundDialog.dialogRow.bannerImg = ''
-      }
       this.$store.commit('SET_DIALOG_TITLE', val)
       this.addFundDialog.show = true
     },
@@ -364,8 +539,24 @@ export default {
 
     // 编辑操作方法
     onEdit(row) {
-      this.addFundDialog.dialogRow = { ...row }
+      this.addFundDialog.dialogRow = { ...row, logoUrl1: row.logoUrl }
       this.showAddFundDialog('edit')
+    },
+    todownloadtemplate() {
+      downloadtemplate().then((res) => {
+        let a = document.createElement('a')
+        let blob = new Blob([res], {
+          //设置数据源
+          type:
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet; application/octet-stream', //设置文件格式
+        })
+        let objectUrl = URL.createObjectURL(blob) //创建下载的链接
+        a.href = objectUrl
+        let name = 'game_templent.xlsx'
+        a.download = name
+        a.click()
+        window.URL.revokeObjectURL(objectUrl)
+      })
     },
     // 删除数据
     onDelete(row) {
@@ -373,9 +564,8 @@ export default {
         type: 'warning',
       })
         .then(() => {
-          const para = { id: row.id }
-
-          deleteData(para).then((res) => {
+          const para = { paramIds: [row.id] }
+          gamedel(para).then((res) => {
             this.$message({
               message: '删除成功',
               type: 'success',
@@ -385,14 +575,24 @@ export default {
         })
         .catch(() => {})
     },
+    onBatchUpItem(type) {
+      this.upDowntitle = type == 1 ? '批量上线' : '批量下线'
+      this.isUpDownShow = true
+    },
+    onBatchtagItem() {
+      this.isTagsShow = true
+    },
+    onExportItem() {
+      this.isExportShow = true
+    },
     onBatchDelItem() {
       this.$confirm('确认批量删除记录吗?', '提示', {
         type: 'warning',
       })
         .then(() => {
-          const ids = this.rowIds.map((item) => item.id).toString()
-          const para = { ids: ids }
-          batchremoveMoney(para).then((res) => {
+          const ids = this.rowIds
+          const para = { paramIds: ids }
+          gamedel(para).then((res) => {
             this.$message({
               message: '批量删除成功',
               type: 'success',
@@ -415,6 +615,10 @@ export default {
     },
     setSearchBtn(val) {
       let isFlag = true
+      this.rowIds = []
+      val.map((t) => {
+        this.rowIds.push(t.id)
+      })
       if (val.length > 0) {
         isFlag = false
       } else {

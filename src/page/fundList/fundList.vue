@@ -397,13 +397,14 @@ export default {
       })
     },
     getproductList() {
+      debugger
       const param = {
         pageNum: this.incomePayData.page,
         pageSize: this.incomePayData.size,
-        searchKey: '',
-        catetoryId: '',
+        searchKey: this.search.searchKey,
+        catetoryId: this.search.categoryId,
         // status:'',
-        // domainId:'',
+        domainId: this.search.domainId,
         // domainId:'',
       }
       mggamelist(param).then((res) => {

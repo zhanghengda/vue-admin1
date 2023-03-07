@@ -15,13 +15,16 @@
           @keyup.enter.native="onSearch('search_data')"
         ></el-input>
       </el-form-item>
-      <el-form-item label="">
-        <el-input
-          v-model="search_data.searchKey"
-          placeholder="域名名称"
-          v-if="isDomainShow"
-          @keyup.enter.native="onSearch('search_data')"
-        ></el-input>
+      <el-form-item label="域名名称">
+        <el-select v-model="search_data.domainId" placeholder="请选择">
+          <el-option
+            v-for="item in domains"
+            :key="item.id"
+            :label="item.domain"
+            :value="item.id"
+          >
+          </el-option>
+        </el-select>
       </el-form-item>
       <el-form-item label="游戏分类：">
         <el-select v-model="search_data.categoryId" placeholder="请选择">
@@ -125,7 +128,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { mggameupdate, mggameadd, categorylist } from '@/api/user'
+import { mggameupdate, mggameadd, mgdomainlist, categorylist } from '@/api/user'
 export default {
   name: 'searchItem',
   props: {
@@ -149,8 +152,10 @@ export default {
         productName: '',
         productNo: '',
         categoryId: '',
+        domainId: '',
         identifyCode: '',
       },
+      domains: [],
       categorys: [],
       rules: {
         name: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
@@ -162,6 +167,7 @@ export default {
   },
   created() {
     this.oncategorylist()
+    this.getdomainList()
   },
   methods: {
     onSearch(searchForm) {
@@ -181,6 +187,20 @@ export default {
       }
       categorylist(param).then((res) => {
         this.categorys = res.data.records
+      })
+    },
+    getdomainList() {
+      const param = {
+        pageNum: 0,
+        pageSize: 100,
+        searchKey: '',
+        // catetoryId:'',
+        // status:'',
+        // domainId:'',
+        // domainId:'',
+      }
+      mgdomainlist(param).then((res) => {
+        this.domains = res.data.records
       })
     },
     onClearSearch() {

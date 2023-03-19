@@ -30,7 +30,6 @@ service.interceptors.response.use(
      * code:200,接口正常返回;
      */
     const res = response.data
-
     if (res.code !== 0) {
       Message({
         message: res.desc,
@@ -82,7 +81,6 @@ service.interceptors.response.use(
     return Promise.reject(error)
   }
 )
-
 /* 上传文件 */
 export function fetchUpload(url, formData) {
   url = url + suffix
@@ -98,6 +96,30 @@ export function fetchUpload(url, formData) {
       .catch((error) => {
         // reject(error);
         info(error)
+        resolve({
+          ok: false,
+          msg: '请求超时，请重试',
+        })
+      })
+  })
+}
+/* 上传文件 */
+export function fetchPost(url, formData) {
+  url = url
+  const headers = {
+    token: getToken('Token'),
+    'Content-Type': 'application/json',
+  }
+  return new Promise((resolve, reject) => {
+    axios
+      .post(url, formData, {
+        headers,
+      })
+      .then((response) => {
+        resolve(response.data)
+      })
+      .catch((error) => {
+        // reject(error);
         resolve({
           ok: false,
           msg: '请求超时，请重试',

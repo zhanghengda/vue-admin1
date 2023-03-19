@@ -49,6 +49,11 @@
           label="游戏介绍"
           align="center"
         >
+          <template slot-scope="scope">
+            <div class="href-box">
+              {{ scope.row.intro }}
+            </div>
+          </template>
         </el-table-column>
 
         <el-table-column prop="logoUrl" width="120" label="logo" align="center">
@@ -73,18 +78,30 @@
         </el-table-column>
 
         <el-table-column
-          prop="categoryId"
+          prop="categorysname"
           width="100"
           label="游戏分类"
           align="center"
         >
         </el-table-column>
+        <!-- <el-table-column
+          prop="sort"
+          width="100"
+          label="游戏排序"
+          align="center"
+        >
+        </el-table-column> -->
         <el-table-column
           prop="href"
           width="180"
           label="游戏链接"
           align="center"
         >
+          <template slot-scope="scope">
+            <div class="href-box">
+              {{ scope.row.href }}
+            </div>
+          </template>
         </el-table-column>
         <el-table-column
           prop="href"
@@ -105,7 +122,7 @@
                 {{
                   scope.row.status == 0
                     ? '未上架'
-                    : scope.row.status == 0
+                    : scope.row.status == 1
                     ? '已上架'
                     : '已下架'
                 }}</span
@@ -150,13 +167,13 @@
               >删除</el-button
             >
 
-            <el-button
+            <!-- <el-button
               type="success"
               icon="delete"
               size="mini"
               @click="onEdit(scope.row)"
               >配置 游戏</el-button
-            >
+            > -->
           </template>
         </el-table-column>
       </el-table>
@@ -375,7 +392,7 @@ export default {
     Pagination,
   },
   computed: {
-    ...mapGetters(['search']),
+    ...mapGetters(['search', 'categorys']),
     getImgBaseUrl() {
       return localStorage.getItem('baseUrl')
     },
@@ -397,25 +414,42 @@ export default {
       })
     },
     getproductList() {
-      debugger
+      let _this = this
       const param = {
-        pageNum: this.incomePayData.page,
+        pageNum: this.incomePayData.page + 1,
         pageSize: this.incomePayData.size,
         searchKey: this.search.searchKey,
-        catetoryId: this.search.categoryId,
-        // status:'',
+        categoryId: this.search.categoryId,
+        // status: this.search.status,
         domainId: this.search.domainId,
         // domainId:'',
       }
       mggamelist(param).then((res) => {
         this.loading = false
         this.pageTotal = res.data.total
+
+        if (_this.categorys.length > 0) {
+          res.data.records.map((t) => {
+            let name = ''
+            if (t.categoryId != '') {
+              let categoryId = t.categoryId.split(',')
+              categoryId.map((id, index) => {
+                let n = _this.categorys.find((f) => id == f.id).category
+                if (index > 0) name += n + ','
+                else name += n
+              })
+            }
+
+            t.categorysname = name
+          })
+        }
+
         this.tableData = res.data.records
       })
     },
     getdomainList() {
       const param = {
-        pageNum: 0,
+        pageNum: 1,
         pageSize: 100,
         searchKey: '',
         // catetoryId:'',
@@ -484,7 +518,7 @@ export default {
         })
         return
       }
-      this.$confirm('确认批量上线选择游戏吗?', '提示', {
+      this.$confirm('确认' + this.upDowntitle + '选择游戏吗?', '提示', {
         type: 'warning',
       })
         .then(() => {
@@ -493,7 +527,11 @@ export default {
           formData.domains.map((t) => {
             domainIds.push(this.domains.find((d) => d.domain == t).id)
           })
-          const para = { paramIds: ids, status: 1, domainIds: domainIds }
+          const para = {
+            paramIds: ids,
+            status: this.upDowntitle == '批量上线' ? 1 : 2,
+            domainIds: domainIds,
+          }
           mggamesetdgstatus(para).then((res) => {
             _this.$message({
               message: '批量操作成功',
@@ -540,24 +578,28 @@ export default {
 
     // 编辑操作方法
     onEdit(row) {
+      let categorys = row.categoryId.split(',')
+      row.categoryId = categorys.map(Number)
       this.addFundDialog.dialogRow = { ...row, logoUrl1: row.logoUrl }
       this.showAddFundDialog('edit')
     },
     todownloadtemplate() {
-      downloadtemplate().then((res) => {
-        let a = document.createElement('a')
-        let blob = new Blob([res], {
-          //设置数据源
-          type:
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet; application/octet-stream', //设置文件格式
-        })
-        let objectUrl = URL.createObjectURL(blob) //创建下载的链接
-        a.href = objectUrl
-        let name = 'game_templent.xlsx'
-        a.download = name
-        a.click()
-        window.URL.revokeObjectURL(objectUrl)
-      })
+      // downloadtemplate().then((res) => {
+      //   let a = document.createElement('a')
+      //   let blob = new Blob([res], {
+      //     //设置数据源
+      //     type:
+      //       'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet; application/octet-stream', //设置文件格式
+      //   })
+      //   let objectUrl = URL.createObjectURL(blob) //创建下载的链接
+      //   a.href = objectUrl
+      //   let name = 'game_templent.xlsx'
+      //   a.download = name
+      //   a.click()
+      //   window.URL.revokeObjectURL(objectUrl)
+      // })
+
+      window.open('http://47.254.23.164:8300/res/template/game_template.xlsx')
     },
     // 删除数据
     onDelete(row) {
@@ -651,6 +693,16 @@ export default {
 }
 .el-dialog--small {
   width: 600px !important;
+}
+.href-box {
+  height: 32px;
+  font-size: 14px;
+  line-height: 16px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 .pagination {
   text-align: left;

@@ -4,7 +4,6 @@
       @showDialog="showAddFundDialog"
       @searchList="getproductList"
       isFilterShow
-      @onBatchDelItem="onBatchDelItem"
     ></search-item>
     <div class="table_container">
       <el-table
@@ -68,16 +67,13 @@
               @click="onEdit(scope.row)"
               >编辑</el-button
             >
-            <!-- <el-button type="warning" icon="edit" size="mini"
-              >配置游戏</el-button
-            > -->
-            <!-- <el-button
-              type="danger"
-              icon="delete"
+            <el-button
+              type="warning"
+              icon="edit"
               size="mini"
-              @click="onDelete(scope.row, scope.$index)"
-              >删除</el-button
-            > -->
+              @click="peizhi(scope.row)"
+              >配置游戏</el-button
+            >
           </template>
         </el-table-column>
       </el-table>
@@ -95,6 +91,112 @@
         @getFundList="getproductList"
         @closeDialog="hideAddFundDialog"
       ></domainDialog>
+
+      <el-dialog
+        :title="dialogtitle"
+        width="75%"
+        height="500px"
+        max-height="500px"
+        :visible.sync="dialogTableVisible"
+      >
+        <div>
+          <el-table height="400px" :data="gridData">
+            <el-table-column
+              prop="name"
+              label="游戏名称"
+              align="center"
+              width="*"
+            >
+            </el-table-column>
+            <el-table-column width="100" label="游戏打分" align="center">
+              <template slot-scope="scope">
+                <div>{{ scope.row.star }}分</div>
+              </template>
+            </el-table-column>
+            <el-table-column
+              prop="logoUrl"
+              width="120"
+              label="logo"
+              align="center"
+            >
+              <template slot-scope="scope">
+                <div class="banner-box">
+                  <img
+                    v-if="scope.row.logoUrl"
+                    class="banner"
+                    :src="scope.row.logoUrl"
+                    alt=""
+                  />
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column prop="tags" width="*" label="标签" align="center">
+            </el-table-column>
+            <el-table-column
+              prop="categorysname"
+              width="*"
+              label="游戏分类"
+              align="center"
+            >
+            </el-table-column>
+
+            <el-table-column
+              prop="href"
+              width="*"
+              label="游戏链接"
+              align="center"
+            >
+              <template slot-scope="scope">
+                <div class="href-box">
+                  {{ scope.row.href }}
+                </div>
+              </template>
+            </el-table-column>
+
+            <el-table-column
+              prop="sort"
+              width="*"
+              label="游戏排序"
+              align="center"
+            >
+              <template slot-scope="scope">
+                <div>
+                  <el-input type="text" v-model="scope.row.sort"></el-input>
+                </div>
+              </template>
+            </el-table-column>
+
+            <el-table-column width="*" label="状态" align="center">
+              <template slot-scope="scope">
+                <div>
+                  <span>
+                    {{
+                      scope.row.status == 0
+                        ? '未上架'
+                        : scope.row.status == 1
+                        ? '已上架'
+                        : '已下架'
+                    }}</span
+                  >
+                </div>
+              </template>
+            </el-table-column>
+          </el-table>
+
+          <!-- <pagination
+            :pageTotal="dialogTotal"
+            :current-page="dialogData.page"
+            :page-size="dialogData.size"
+            @handleCurrentChange="dialoghandleCurrentChange"
+            @handleSizeChange="dialoghandleSizeChange"
+          ></pagination> -->
+
+          <div class="dialog-btnbox">
+            <el-button @click="dialogTableVisible = false">取 消</el-button>
+            <el-button type="primary" @click="onSubmit()">保 存</el-button>
+          </div>
+        </div>
+      </el-dialog>
     </div>
   </div>
 </template>
@@ -105,7 +207,7 @@ import * as mutils from '@/utils/mUtils'
 import SearchItem from './components/searchItem'
 import domainDialog from './components/domainDialog'
 import Pagination from '@/components/pagination'
-import { mgdomainlist, deleteData } from '@/api/user'
+import { mgdomainlist, setgamesort, mggamelist, deleteData } from '@/api/user'
 
 let moment = require('moment')
 
@@ -115,11 +217,14 @@ export default {
       tableData: [],
       tableHeight: 0,
       loading: true,
+      gridData: [],
+      dialogTableVisible: false,
       idFlag: false,
       isShow: false, // 是否显示资金modal,默认为false
       editid: '',
       rowIds: [],
       sortnum: 0,
+      dialogtitle: '配置游戏',
       format_type_list: {
         0: '提现',
         1: '提现手续费',
@@ -131,6 +236,7 @@ export default {
         7: '充值礼券',
         8: '转账',
       },
+      domainId: '',
       addFundDialog: {
         show: false,
         dialogRow: {},
@@ -138,9 +244,13 @@ export default {
       incomePayData: {
         page: 0,
         size: 20,
-        name: '',
+      },
+      dialogData: {
+        page: 0,
+        size: 200,
       },
       pageTotal: 0,
+      dialogTotal: 0,
     }
   },
   components: {
@@ -149,7 +259,7 @@ export default {
     Pagination,
   },
   computed: {
-    ...mapGetters(['search']),
+    ...mapGetters(['search', 'categorys']),
     getImgBaseUrl() {
       return localStorage.getItem('baseUrl')
     },
@@ -169,20 +279,77 @@ export default {
         this.tableHeight = document.body.clientHeight - 300
       })
     },
+    onSubmit() {
+      let formData = []
+      this.loading = true
+      this.gridData.map((t) => {
+        let game = {
+          domainId: this.domainId,
+          gameId: t.id,
+          sort: t.sort,
+        }
+        formData.push(game)
+      })
+
+      const para = JSON.stringify(formData)
+      setgamesort(para).then((res) => {
+        if (res.code == 0) {
+          this.$message({
+            message: '保存成功',
+            type: 'success',
+          })
+
+          this.getgamesList({
+            domainId: this.domainId,
+          })
+        } else {
+          this.$message({
+            message: res.desc,
+            type: 'error',
+          })
+        }
+        this.isVisible = false
+      })
+    },
     getproductList() {
       const param = {
-        pageNum: this.incomePayData.page,
+        pageNum: this.incomePayData.page + 1,
         pageSize: this.incomePayData.size,
         searchKey: '',
-        // catetoryId:'',
-        // status:'',
-        // domainId:'',
-        // domainId:'',
       }
       mgdomainlist(param).then((res) => {
         this.loading = false
         this.pageTotal = res.data.total
         this.tableData = res.data.records
+      })
+    },
+
+    getgamesList() {
+      let _this = this
+      const param = {
+        pageNum: this.dialogData.page + 1,
+        pageSize: this.dialogData.size,
+        domainId: this.domainId,
+      }
+      mggamelist(param).then((res) => {
+        this.dialogTotal = res.data.total
+
+        if (_this.categorys.length > 0) {
+          res.data.records.map((t) => {
+            let name = ''
+            if (t.categoryId != '') {
+              let categoryId = t.categoryId.split(',')
+              categoryId.map((id, index) => {
+                let n = _this.categorys.find((f) => id == f.id).category
+                if (index > 0) name += n + ','
+                else name += n
+              })
+            }
+
+            t.categorysname = name
+          })
+        }
+        this.gridData = res.data.records
       })
     },
     // 显示资金弹框
@@ -199,59 +366,35 @@ export default {
       console.log('val', val)
       this.getproductList()
     },
+
+    // 弹出窗上下分页
+    dialoghandleCurrentChange(val) {
+      this.dialogData.page = val
+      this.getgamesList()
+    },
     // 每页显示多少条
     handleSizeChange(val) {
       this.incomePayData.size = val
       this.getproductList()
     },
-    getPay(val) {
-      if (mutils.isInteger(val)) {
-        return -val
-      } else {
-        return val
-      }
+    // 弹出窗每页显示多少条
+    dialoghandleSizeChange(val) {
+      this.dialogData.size = val
+      this.getgamesList()
     },
 
+    peizhi(row) {
+      this.dialogTableVisible = true
+      this.domainId = row.id
+      this.dialogtitle = row.domain + '配置游戏'
+      this.getgamesList()
+    },
     // 编辑操作方法
     onEdit(row) {
       this.addFundDialog.dialogRow = { ...row }
       this.showAddFundDialog('edit')
     },
-    // 删除数据
-    onDelete(row) {
-      this.$confirm('确认删除该记录吗?', '提示', {
-        type: 'warning',
-      })
-        .then(() => {
-          const para = { id: row.id }
 
-          deleteData(para).then((res) => {
-            this.$message({
-              message: '删除成功',
-              type: 'success',
-            })
-            this.getproductList()
-          })
-        })
-        .catch(() => {})
-    },
-    onBatchDelItem() {
-      this.$confirm('确认批量删除记录吗?', '提示', {
-        type: 'warning',
-      })
-        .then(() => {
-          const ids = this.rowIds.map((item) => item.id).toString()
-          const para = { ids: ids }
-          batchremoveMoney(para).then((res) => {
-            this.$message({
-              message: '批量删除成功',
-              type: 'success',
-            })
-            this.getproductList()
-          })
-        })
-        .catch(() => {})
-    },
     // 当用户手动勾选数据行的 Checkbox 时触发的事件
     selectTable(val, row) {
       this.setSearchBtn(val)
@@ -293,6 +436,22 @@ export default {
   .logo-banner {
     height: 120px;
   }
+}
+
+.href-box {
+  height: 32px;
+  font-size: 14px;
+  line-height: 16px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+.dialog-btnbox {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .el-dialog--small {
   width: 600px !important;

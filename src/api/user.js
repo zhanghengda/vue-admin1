@@ -1,6 +1,6 @@
 import request from '@/utils/axios'
 import qs from 'qs'
-import { getFile } from '@/utils/axios'
+import { getFile, fetchPost } from '@/utils/axios'
 export function login(params) {
   return request({
     url: '/gs/mg/user/login',
@@ -109,6 +109,10 @@ export function mggameinfo(params) {
     method: 'get',
     data: params,
   })
+}
+/**游戏配置详情设置 */
+export function setgamesort(params) {
+  return fetchPost('/gs/mg/domain/setgamesort', params)
 }
 
 /**游戏配置列表 */

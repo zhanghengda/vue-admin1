@@ -6,6 +6,7 @@ const user = {
   state: {
     name: 'admin',
     avatar: '',
+    categorys: [],
     token: getToken('Token'),
     roles: [],
     browserHeaderTitle: mUtils.getStore('browserHeaderTitle') || '鉴定Admin',
@@ -14,12 +15,16 @@ const user = {
     token: (state) => state.token,
     roles: (state) => state.roles,
     avatar: (state) => state.avatar,
+    categorys: (state) => state.categorys,
     name: (state) => state.name,
     browserHeaderTitle: (state) => state.browserHeaderTitle,
   },
   mutations: {
     SET_ROLES: (state, roles) => {
       state.roles = roles
+    },
+    SET_CATEGORYS: (state, categorys) => {
+      state.categorys = categorys
     },
     SET_BROWSERHEADERTITLE: (state, action) => {
       state.browserHeaderTitle = action.browserHeaderTitle

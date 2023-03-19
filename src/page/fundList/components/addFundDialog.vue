@@ -22,8 +22,11 @@
         <el-form-item prop="href" label="游戏链接:">
           <el-input type="text" v-model="form.href"></el-input>
         </el-form-item>
+        <!-- <el-form-item prop="href" label="游戏排序:">
+          <el-input type="text" v-model="form.sort"></el-input>
+        </el-form-item> -->
         <el-form-item prop="categoryId" label="游戏分类:">
-          <el-select v-model="form.categoryId" placeholder="请选择">
+          <el-select v-model="form.categoryId" placeholder="请选择" multiple>
             <el-option
               v-for="item in categorys"
               :key="item.id"
@@ -68,7 +71,7 @@
 </template>
 
 <script>
-import { mapState, mapGetters } from 'vuex'
+import { mapState, mapMutations, mapGetters } from 'vuex'
 import AreaJson from '@/assets/datas/area.json'
 import { mggameupdate, mggameadd, categorylist } from '@/api/user'
 let moment = require('moment')
@@ -96,7 +99,7 @@ export default {
         name: '',
         href: '',
         intro: '',
-        categoryId: '',
+        categoryId: [],
         logoUrl: '',
       },
       form_rules: {
@@ -149,6 +152,9 @@ export default {
     }
   },
   methods: {
+    ...mapMutations({
+      SET_CATEGORYS: 'user/SET_CATEGORYS',
+    }),
     handleRemove(file, fileList) {
       console.log(file, fileList)
       this.fileList = fileList
@@ -174,6 +180,7 @@ export default {
       }
       categorylist(param).then((res) => {
         this.categorys = res.data.records
+        this.$store.commit('SET_CATEGORYS', this.categorys)
       })
     },
     handleAvatarSuccess1(res, file) {
@@ -228,14 +235,14 @@ export default {
       this.$refs[form].validate((valid) => {
         if (valid) {
           //表单数据验证完成之后，提交数据;
-
           let formData = this[form]
-
           const para = Object.assign({}, formData)
-
+          para.categoryId = para.categoryId.join(',')
           // edit
           if (this.addFundDialog.type === 'edit') {
             mggameupdate(para).then((res) => {
+              this.oncategorylist()
+
               this.$message({
                 message: '修改成功',
                 type: 'success',
@@ -251,6 +258,8 @@ export default {
                 message: '新增成功',
                 type: 'success',
               })
+              this.oncategorylist()
+
               this.$refs['form'].resetFields()
               this.isVisible = false
               this.$emit('getFundList')

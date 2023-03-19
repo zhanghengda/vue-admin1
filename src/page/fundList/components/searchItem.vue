@@ -15,7 +15,7 @@
           @keyup.enter.native="onSearch('search_data')"
         ></el-input>
       </el-form-item>
-      <el-form-item label="域名名称">
+      <el-form-item label="域名名称" v-if="isSearchShow">
         <el-select v-model="search_data.domainId" placeholder="请选择">
           <el-option
             v-for="item in domains"
@@ -26,7 +26,7 @@
           </el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="游戏分类：">
+      <el-form-item label="游戏分类：" v-if="isSearchShow">
         <el-select v-model="search_data.categoryId" placeholder="请选择">
           <el-option
             v-for="item in categorys"
@@ -37,14 +37,17 @@
           </el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="">
-        <el-input
-          v-model="search_data.identifyCode"
-          placeholder="状态"
-          v-if="isGameStatusShow"
-          @keyup.enter.native="onSearch('search_data')"
-        ></el-input>
-      </el-form-item>
+      <!-- <el-form-item label="上架状态">
+        <el-select v-model="search_data.status" placeholder="请选择">
+          <el-option
+            v-for="item in statusList"
+            :key="item.id"
+            :label="item.lable"
+            :value="item.id"
+          >
+          </el-option>
+        </el-select>
+      </el-form-item> -->
       <el-form-item>
         <el-button
           type="primary"
@@ -127,8 +130,9 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
 import { mggameupdate, mggameadd, mgdomainlist, categorylist } from '@/api/user'
+import { mapGetters, mapMutations } from 'vuex'
+
 export default {
   name: 'searchItem',
   props: {
@@ -157,6 +161,28 @@ export default {
       },
       domains: [],
       categorys: [],
+      statusList: [
+        {
+          id: -1,
+          value: -1,
+          lable: '全部',
+        },
+        {
+          id: 0,
+          value: 0,
+          lable: '草稿',
+        },
+        {
+          id: 1,
+          value: 1,
+          lable: '已上架',
+        },
+        {
+          id: 2,
+          value: 2,
+          lable: '已下架',
+        },
+      ],
       rules: {
         name: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
       },
@@ -170,6 +196,9 @@ export default {
     this.getdomainList()
   },
   methods: {
+    ...mapMutations({
+      SET_CATEGORYS: 'user/SET_CATEGORYS',
+    }),
     onSearch(searchForm) {
       this.$refs[searchForm].validate((valid) => {
         if (valid) {
@@ -187,6 +216,7 @@ export default {
       }
       categorylist(param).then((res) => {
         this.categorys = res.data.records
+        this.$store.commit('SET_CATEGORYS', this.categorys)
       })
     },
     getdomainList() {

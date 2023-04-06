@@ -15,29 +15,11 @@
         :rules="form_rules"
         style="margin:10px;width:auto;"
       >
-        <el-form-item prop="name" label="游戏名称:">
-          <el-input type="text" v-model="form.name"></el-input>
+        <el-form-item prop="title" label="标题:">
+          <el-input type="text" v-model="form.title"></el-input>
         </el-form-item>
 
-        <el-form-item prop="href" label="游戏链接:">
-          <el-input type="text" v-model="form.href"></el-input>
-        </el-form-item>
-        <!-- <el-form-item prop="href" label="游戏排序:">
-          <el-input type="text" v-model="form.sort"></el-input>
-        </el-form-item> -->
-        <el-form-item prop="categoryId" label="游戏分类:">
-          <el-select v-model="form.categoryId" placeholder="请选择" multiple>
-            <el-option
-              v-for="item in categorys"
-              :key="item.id"
-              :label="item.category"
-              :value="item.id"
-            >
-            </el-option>
-          </el-select>
-        </el-form-item>
-
-        <el-form-item v-model="form.logoUrl" label="游戏logo:">
+        <el-form-item v-model="form.imgUrl" label="封面:">
           <el-upload
             class="avatar-uploader"
             action="/gs/comm/fileupload"
@@ -54,13 +36,14 @@
           </el-upload>
         </el-form-item>
 
-        <el-form-item v-model="form.intro" label="游戏描述:">
-          <el-input type="textarea" v-model="form.intro"></el-input>
+        <el-form-item prop="content" label="描述:">
+          <Editor
+            @listenToDetail="getDetail1"
+            :description="form.content"
+            :uploadKey="'marketInfo1'"
+          ></Editor>
         </el-form-item>
 
-        <el-form-item label="游戏打分:">
-          <el-rate v-model="form.star"></el-rate>
-        </el-form-item>
         <el-form-item class="text_right">
           <el-button @click="isVisible = false">取 消</el-button>
           <el-button type="primary" @click="onSubmit('form')">提 交</el-button>
@@ -71,12 +54,11 @@
 </template>
 
 <script>
-import { mapState, mapMutations, mapGetters } from 'vuex'
+import { mapMutations, mapGetters } from 'vuex'
 import AreaJson from '@/assets/datas/area.json'
-import { mggameupdate, mggameadd, categorylist } from '@/api/user'
+import { gsblogupdate, gsblogadd, categorylist } from '@/api/user'
 let moment = require('moment')
 import Editor from '@/components/editor'
-
 import { getToken, setToken, removeToken } from '@/utils/auth'
 export default {
   name: 'addFundDialogs',
@@ -95,25 +77,19 @@ export default {
         mode: 2,
       },
       form: {
-        star: 5,
-        name: '',
-        href: '',
-        intro: '',
-        categoryId: [],
-        logoUrl: '',
+        title: '',
+        content: '',
+        imgUrl: '',
       },
       form_rules: {
-        name: [
-          { required: true, message: '游戏名称不能为空！', trigger: 'blur' },
+        ntitleame: [
+          { required: true, message: '标题不能为空！', trigger: 'blur' },
         ],
-        href: [
-          { required: true, message: '游戏链接不能为空！', trigger: 'blur' },
+        content: [
+          { required: true, message: '描述不能为空！', trigger: 'blur' },
         ],
-        intro: [
-          { required: true, message: '游戏介绍不能为空！', trigger: 'blur' },
-        ],
-        categoryId: [
-          { required: true, message: '请选择游戏类型！', trigger: 'blur' },
+        imgUrl: [
+          { required: true, message: '封面不能为空！', trigger: 'blur' },
         ],
       },
       //详情弹框信息
@@ -156,20 +132,13 @@ export default {
       SET_CATEGORYS: 'user/SET_CATEGORYS',
     }),
     handleRemove(file, fileList) {
-      console.log(file, fileList)
       this.fileList = fileList
     },
     getDetail(data) {
       this.form.enterpriseInfo = data
     },
     getDetail1(data) {
-      this.form.trustInfo = data
-    },
-    getDetail2(data) {
-      this.form.qualificationInfo = data
-    },
-    getDetail3(data) {
-      this.form.productRemark = data
+      this.form.content = data
     },
 
     //获取分类
@@ -185,8 +154,10 @@ export default {
     },
     handleAvatarSuccess1(res, file) {
       if (res.code == 0) {
-        this.form.logoUrl1 = 'http://47.254.23.164:8300' + res.data.fileUrl
-        this.form.logoUrl = res.data.fileUrl
+        this.form.logoUrl1 =
+          (location.hostname === 'localhost' ? 'http://47.254.23.164' : '') +
+          res.data.fileUrl
+        this.form.imgUrl = res.data.fileUrl
       }
     },
     handleAvatarSuccess(res, file) {
@@ -197,7 +168,6 @@ export default {
         })
         console.log(file, res, this.fileList)
       }
-      //   this.imageUrl = URL.createObjectURL(file.raw)
     },
     beforeAvatarUpload(file) {
       const isLt2M = file.size / 1024 / 1024 < 5
@@ -237,12 +207,9 @@ export default {
           //表单数据验证完成之后，提交数据;
           let formData = this[form]
           const para = Object.assign({}, formData)
-          para.categoryId = para.categoryId.join(',')
           // edit
           if (this.addFundDialog.type === 'edit') {
-            mggameupdate(para).then((res) => {
-              this.oncategorylist()
-
+            gsblogupdate(para).then((res) => {
               this.$message({
                 message: '修改成功',
                 type: 'success',
@@ -253,12 +220,11 @@ export default {
             })
           } else {
             // add
-            mggameadd(para).then((res) => {
+            gsblogadd(para).then((res) => {
               this.$message({
                 message: '新增成功',
                 type: 'success',
               })
-              this.oncategorylist()
 
               this.$refs['form'].resetFields()
               this.isVisible = false

@@ -105,6 +105,15 @@ export const constantRouterMap = [
         },
         component: () => import('@/page/fundList/domain'),
       },
+      {
+        path: 'article',
+        name: 'article',
+        meta: {
+          title: '文章配置',
+          routerType: 'admin',
+        },
+        component: () => import('@/page/fundList/article'),
+      },
     ],
   },
   // {

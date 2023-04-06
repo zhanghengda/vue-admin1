@@ -16,6 +16,44 @@ export function categorylist(params) {
     data: params,
   })
 }
+/**文章列表 */
+export function gsbloglist(params) {
+  return request({
+    url: '/gs/mg/blog/list?' + qs.stringify(params),
+    method: 'get',
+    data: params,
+  })
+}
+
+export function gsblogadd(params) {
+  return request({
+    url: '/gs/mg/blog/add',
+    method: 'post',
+    data: params,
+  })
+}
+export function gsblogupdate(params) {
+  return request({
+    url: '/gs/mg/blog/update',
+    method: 'post',
+    data: params,
+  })
+}
+export function gsblogsetdgstatus(params) {
+  return request({
+    url: '/gs/mg/blog/setdgstatus',
+    method: 'post',
+    data: params,
+  })
+}
+
+export function gsblogdel(params) {
+  return request({
+    url: '/gs/mg/blog/del',
+    method: 'post',
+    data: params,
+  })
+}
 
 /**游戏分类 */
 export function downloadtemplate(params) {

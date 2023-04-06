@@ -4,22 +4,9 @@
       @showDialog="showAddFundDialog"
       @searchList="getproductList"
       isAllShow
-      isGameNameShow
-      isGameUrlShow
-      isGameCatetoryShow
-      isGameStatusShow
-      isFilterShow
-      isSearchShow
-      isUpShow
-      isDownShow
-      isTagShow
-      isExportShow
-      isDomainShow
-      @todownloadtemplate="todownloadtemplate"
       @onBatchUpItem="onBatchUpItem"
       @onBatchtagItem="onBatchtagItem"
       @onBatchDelItem="onBatchDelItem"
-      @onExportItem="onExportItem"
     ></search-item>
     <div class="table_container">
       <el-table
@@ -27,7 +14,6 @@
         :data="tableData"
         :row-style="{ height: '120px', 'max-height': '120px' }"
         style="width: 100%"
-        align="center"
         @select="selectTable"
         @select-all="selectAll"
       >
@@ -41,80 +27,29 @@
         </el-table-column>
         <el-table-column type="selection" align="center" width="60">
         </el-table-column>
-        <el-table-column prop="name" label="游戏名称" align="center" width="80">
+        <el-table-column prop="title" label="标题" align="center" width="280">
         </el-table-column>
-        <el-table-column
-          prop="intro"
-          width="180"
-          label="游戏介绍"
-          align="center"
-        >
+        <el-table-column prop="intro" width="180" label="描述" align="center">
           <template slot-scope="scope">
             <div class="href-box">
-              {{ scope.row.intro }}
+              {{ scope.row.content }}
             </div>
           </template>
         </el-table-column>
 
-        <el-table-column prop="logoUrl" width="120" label="logo" align="center">
+        <el-table-column prop="logoUrl" width="120" label="封面" align="center">
           <template slot-scope="scope">
             <div class="banner-box">
               <img
-                v-if="scope.row.logoUrl"
+                v-if="scope.row.imgUrl"
                 class="banner"
-                :src="scope.row.logoUrl"
+                :src="scope.row.imgUrl"
                 alt=""
               />
             </div>
           </template>
         </el-table-column>
-        <el-table-column width="100" label="游戏打分" align="center">
-          <template slot-scope="scope">
-            <div>{{ scope.row.star }}分</div>
-          </template>
-        </el-table-column>
 
-        <el-table-column prop="tags" width="100" label="标签" align="center">
-        </el-table-column>
-
-        <el-table-column
-          prop="categorysname"
-          width="100"
-          label="游戏分类"
-          align="center"
-        >
-        </el-table-column>
-        <!-- <el-table-column
-          prop="sort"
-          width="100"
-          label="游戏排序"
-          align="center"
-        >
-        </el-table-column> -->
-        <el-table-column
-          prop="href"
-          width="180"
-          label="游戏链接"
-          align="center"
-        >
-          <template slot-scope="scope">
-            <div class="href-box">
-              {{ scope.row.href }}
-            </div>
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="href"
-          width="180"
-          label="发布域名"
-          align="center"
-        >
-          <template slot-scope="scope">
-            <div v-if="scope.row.domains">
-              <p v-for="item in scope.row.domains">{{ item.domain }}</p>
-            </div>
-          </template>
-        </el-table-column>
         <el-table-column width="180" label="状态" align="center">
           <template slot-scope="scope">
             <div>
@@ -149,7 +84,7 @@
           prop="operation"
           align="center"
           label="操作"
-          width="280"
+          width="auto"
         >
           <template slot-scope="scope">
             <el-button
@@ -184,13 +119,13 @@
         @handleCurrentChange="handleCurrentChange"
         @handleSizeChange="handleSizeChange"
       ></pagination>
-      <addFundDialog
+      <AddArticleDialog
         v-if="addFundDialog.show"
         :isShow="addFundDialog.show"
         :dialogRow="addFundDialog.dialogRow"
         @getFundList="getproductList"
         @closeDialog="hideAddFundDialog"
-      ></addFundDialog>
+      ></AddArticleDialog>
       <!-- 批量上传-->
       <el-dialog
         :visible.sync="isUpDownShow"
@@ -208,22 +143,11 @@
             :rules="form_rules"
             style="margin:10px;width:auto;"
           >
-            <el-form-item prop="domains" label="上下线域名:">
-              <el-checkbox-group v-model="form.domains">
-                <el-checkbox
-                  :label="item.domain"
-                  :v-model="item.id"
-                  v-for="(item, index) in domains"
-                  :key="item.id"
-                ></el-checkbox>
-              </el-checkbox-group>
-            </el-form-item>
+            <div>是否确认批量操作？</div>
 
             <el-form-item class="text_right">
               <el-button @click="isUpDownShow = false">取 消</el-button>
-              <el-button type="primary" @click="onUpSubmit('form')"
-                >提 交</el-button
-              >
+              <el-button type="primary" @click="onUpSubmit()">提 交</el-button>
             </el-form-item>
           </el-form>
         </div>
@@ -309,21 +233,17 @@
 import { mapGetters } from 'vuex'
 import * as mutils from '@/utils/mUtils'
 import SearchItem from './components/searchItem'
-import AddFundDialog from './components/addFundDialog'
+import AddArticleDialog from './components/addArticleDialog'
 import Pagination from '@/components/pagination'
 
 import { getToken, setToken, removeToken } from '@/utils/auth'
 
 import {
-  getproduct,
-  deleteData,
-  downloadtemplate,
-  gamedel,
-  mggamesetdgstatus,
+  gsblogdel,
+  gsblogsetdgstatus,
   mggameupdatetags,
-  upload,
   mgdomainlist,
-  mggamelist,
+  gsbloglist,
 } from '@/api/user'
 
 let moment = require('moment')
@@ -388,7 +308,7 @@ export default {
   },
   components: {
     SearchItem,
-    AddFundDialog,
+    AddArticleDialog,
     Pagination,
   },
   computed: {
@@ -424,25 +344,9 @@ export default {
         domainId: this.search.domainId,
         // domainId:'',
       }
-      mggamelist(param).then((res) => {
+      gsbloglist(param).then((res) => {
         this.loading = false
         this.pageTotal = res.data.total
-
-        if (_this.categorys.length > 0) {
-          res.data.records.map((t) => {
-            let name = ''
-            if (t.categoryId != '') {
-              let categoryId = t.categoryId.split(',')
-              categoryId.map((id, index) => {
-                let n = _this.categorys.find((f) => id == f.id).category
-                if (index > 0) name += n + ','
-                else name += n
-              })
-            }
-
-            t.categorysname = name
-          })
-        }
 
         this.tableData = res.data.records
       })
@@ -476,6 +380,13 @@ export default {
 
       let _this = this
       let formData = this[form]
+      if (formData.tags.length == 0) {
+        this.$message({
+          message: '请选择域名',
+          type: 'error',
+        })
+        return
+      }
 
       this.$confirm('确认批量设置选择游戏标签吗?', '提示', {
         type: 'warning',
@@ -498,44 +409,23 @@ export default {
         .catch(() => {})
     },
     //表单提交
-    onUpSubmit(form) {
+    onUpSubmit() {
       //表单数据验证完成之后，提交数据;
-      let formData = this[form]
-
       let _this = this
-
-      if (formData.domains.length == 0) {
-        this.$message({
-          message: '请选择域名',
-          type: 'error',
-        })
-        return
+      const ids = _this.rowIds
+      const para = {
+        paramIds: ids,
+        status: this.upDowntitle == '批量上线' ? 1 : 2,
       }
-      this.$confirm('确认' + this.upDowntitle + '选择游戏吗?', '提示', {
-        type: 'warning',
-      })
-        .then(() => {
-          const ids = _this.rowIds
-          let domainIds = []
-          formData.domains.map((t) => {
-            domainIds.push(this.domains.find((d) => d.domain == t).id)
-          })
-          const para = {
-            paramIds: ids,
-            status: this.upDowntitle == '批量上线' ? 1 : 2,
-            domainIds: domainIds,
-          }
-          mggamesetdgstatus(para).then((res) => {
-            _this.$message({
-              message: '批量操作成功',
-              type: 'success',
-            })
-            _this.getproductList()
-            _this.rowIds = []
-            _this.isUpDownShow = false
-          })
+      gsblogsetdgstatus(para).then((res) => {
+        _this.$message({
+          message: '批量操作成功',
+          type: 'success',
         })
-        .catch(() => {})
+        _this.getproductList()
+        _this.rowIds = []
+        _this.isUpDownShow = false
+      })
     },
     toCloseUp() {
       this.isUpDownShow = false
@@ -571,9 +461,7 @@ export default {
 
     // 编辑操作方法
     onEdit(row) {
-      let categorys = row.categoryId.split(',')
-      row.categoryId = categorys.map(Number)
-      this.addFundDialog.dialogRow = { ...row, logoUrl1: row.logoUrl }
+      this.addFundDialog.dialogRow = { ...row, logoUrl1: row.imgUrl }
       this.showAddFundDialog('edit')
     },
     todownloadtemplate() {
@@ -586,7 +474,7 @@ export default {
       })
         .then(() => {
           const para = { paramIds: [row.id] }
-          gamedel(para).then((res) => {
+          gsblogdel(para).then((res) => {
             this.$message({
               message: '删除成功',
               type: 'success',

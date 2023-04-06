@@ -11,6 +11,7 @@ const zh = {
     classify: '分类配置',
     domain: '域名配置',
     share: '分享功能',
+    article: '文章配置',
     infoManage: '信息管理',
     infoShow: '个人信息',
     infoShow1: '个人信息子菜单1',

@@ -4,7 +4,7 @@
       <img
         :class="['logo', { closeLogo: !sidebar.opened }]"
         :src="logo"
-        alt="鉴定admin"
+        alt="admin"
       />
       <span class="title" v-show="sidebar.opened">{{
         $t('commons.zhuisu')

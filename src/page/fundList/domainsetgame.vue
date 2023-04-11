@@ -1,95 +1,85 @@
 <template>
   <div class="fillcontain">
-    <search-item
-      @showDialog="showAddFundDialog"
-      @searchList="getproductList"
-      isFilterShow
-    ></search-item>
     <div class="table_container">
       <el-table
-        v-loading="loading"
-        :data="tableData"
         :row-style="{ height: '120px', 'max-height': '120px' }"
         style="width: 100%"
         align="center"
-        @select="selectTable"
-        @select-all="selectAll"
+        :data="gridData"
       >
-        <el-table-column prop="id" label="序列号" align="center" width="180">
+        <el-table-column prop="name" label="游戏名称" align="center" width="*">
+        </el-table-column>
+        <el-table-column width="100" label="游戏打分" align="center">
+          <template slot-scope="scope">
+            <div>{{ scope.row.star }}分</div>
+          </template>
+        </el-table-column>
+        <el-table-column prop="logoUrl" width="120" label="logo" align="center">
+          <template slot-scope="scope">
+            <div class="banner-box">
+              <img
+                v-if="scope.row.logoUrl"
+                class="banner"
+                :src="scope.row.logoUrl"
+                alt=""
+              />
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column prop="tags" width="*" label="标签" align="center">
+        </el-table-column>
+        <el-table-column
+          prop="categorysname"
+          width="*"
+          label="游戏分类"
+          align="center"
+        >
         </el-table-column>
 
-        <el-table-column prop="domain" label="域名" align="center" width="*">
+        <el-table-column prop="href" width="*" label="游戏链接" align="center">
           <template slot-scope="scope">
-            <div>
-              <a
-                target="_Blank"
-                :href="scope.row.domain"
-                :alt="scope.row.domain"
-              >
-                {{ scope.row.domain }}
-              </a>
+            <div class="href-box">
+              {{ scope.row.href }}
             </div>
           </template>
         </el-table-column>
 
-        <el-table-column
-          prop="gameCount"
-          width="*"
-          label="配置游戏数量"
-          align="center"
-        >
-        </el-table-column>
-        <el-table-column
-          prop="createTime"
-          label="创建时间"
-          align="center"
-          sortable
-          width="170"
-        >
+        <el-table-column prop="sort" width="*" label="游戏排序" align="center">
           <template slot-scope="scope">
-            <el-icon name="time"></el-icon>
-            <span style="margin-left: 10px">{{
-              getTime(scope.row.createTime)
-            }}</span>
+            <div>
+              <el-input type="text" v-model="scope.row.sort"></el-input>
+            </div>
           </template>
         </el-table-column>
-        <el-table-column
-          prop="operation"
-          align="center"
-          label="操作"
-          width="180"
-        >
+
+        <el-table-column width="*" label="状态" align="center">
           <template slot-scope="scope">
-            <el-button
-              type="warning"
-              icon="edit"
-              size="mini"
-              @click="onEdit(scope.row)"
-              >编辑</el-button
-            >
-            <el-button
-              type="warning"
-              icon="edit"
-              size="mini"
-              @click="peizhi(scope.row)"
-              >配置游戏</el-button
-            >
+            <div>
+              <span>
+                {{
+                  scope.row.status == 0
+                    ? '未上架'
+                    : scope.row.status == 1
+                    ? '已上架'
+                    : '已下架'
+                }}</span
+              >
+            </div>
           </template>
         </el-table-column>
       </el-table>
+
+      <div class="dialog-btnbox">
+        <el-button @click="dialogTableVisible = false">取 消</el-button>
+        <el-button type="primary" @click="onSubmit()">保 存</el-button>
+      </div>
+
       <pagination
         :pageTotal="pageTotal"
         :paginations="paginations"
         @handleCurrentChange="handleCurrentChange"
         @handleSizeChange="handleSizeChange"
       ></pagination>
-      <domainDialog
-        v-if="addFundDialog.show"
-        :isShow="addFundDialog.show"
-        :dialogRow="addFundDialog.dialogRow"
-        @getFundList="getproductList"
-        @closeDialog="hideAddFundDialog"
-      ></domainDialog>
     </div>
   </div>
 </template>
@@ -118,17 +108,7 @@ export default {
       rowIds: [],
       sortnum: 0,
       dialogtitle: '配置游戏',
-      format_type_list: {
-        0: '提现',
-        1: '提现手续费',
-        2: '提现锁定',
-        3: '理财服务退出',
-        4: '购买宜定盈',
-        5: '充值',
-        6: '优惠券',
-        7: '充值礼券',
-        8: '转账',
-      },
+
       domainId: '',
       addFundDialog: {
         show: false,
@@ -150,8 +130,6 @@ export default {
     }
   },
   components: {
-    SearchItem,
-    domainDialog,
     Pagination,
   },
   computed: {
@@ -166,7 +144,7 @@ export default {
     },
   },
   mounted() {
-    this.getproductList()
+    this.getgamesList()
   },
   methods: {
     setAddress(value) {},
@@ -225,15 +203,8 @@ export default {
       const param = {
         pageNum: this.paginations.pageIndex,
         pageSize: this.paginations.pageSize,
-        domainId: this.domainId,
+        domainId: this.$route.query.domainId,
       }
-      this.$router.push({
-        path: '/fundManage/domainsetgame',
-        query: {
-          domainId: this.domainId,
-        },
-      })
-      return
       mggamelist(param).then((res) => {
         this.dialogTotal = res.data.total
 
@@ -253,6 +224,8 @@ export default {
           })
         }
         this.gridData = res.data.records
+        this.pageTotal = res.data.total
+        this.tableData = res.data.records
       })
     },
     // 显示资金弹框
@@ -266,26 +239,14 @@ export default {
     // 上下分页
     handleCurrentChange(val) {
       this.paginations.pageIndex = val
-      console.log('val', val)
-      this.getproductList()
-    },
-
-    // 弹出窗上下分页
-    dialoghandleCurrentChange(val) {
-      this.dialogData.page = val
       this.getgamesList()
     },
+
     // 每页显示多少条
     handleSizeChange(val) {
       this.paginations.pageSize = val
-      this.getproductList()
-    },
-    // 弹出窗每页显示多少条
-    dialoghandleSizeChange(val) {
-      this.dialogData.size = val
       this.getgamesList()
     },
-
     peizhi(row) {
       this.dialogTableVisible = true
       this.domainId = row.id

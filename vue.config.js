@@ -56,7 +56,7 @@ module.exports = {
     //       changeOrigin: true
     //   }
     // }
-    proxy: 'http://47.254.23.164:8300',
+    proxy: 'http://petiteseats.com:8300',
   },
   // webpack相关配置
   chainWebpack: (config) => {

@@ -212,7 +212,7 @@ export const loadStyle = (url) => {
  * 设置浏览器头部标题
  */
 export const setTitle = (title) => {
-  title = title ? `${title}` : '鉴定Admin'
+  title = title ? `${title}` : 'Admin'
   window.document.title = title
 }
 

@@ -9,7 +9,7 @@ const user = {
     categorys: [],
     token: getToken('Token'),
     roles: [],
-    browserHeaderTitle: mUtils.getStore('browserHeaderTitle') || '鉴定Admin',
+    browserHeaderTitle: mUtils.getStore('browserHeaderTitle') || '',
   },
   getters: {
     token: (state) => state.token,

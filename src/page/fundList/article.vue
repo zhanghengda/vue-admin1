@@ -29,6 +29,15 @@
         </el-table-column>
         <el-table-column prop="title" label="标题" align="center" width="280">
         </el-table-column>
+
+        <el-table-column
+          prop="domain"
+          label="配置域名"
+          align="center"
+          width="280"
+        >
+        </el-table-column>
+
         <el-table-column prop="intro" width="180" label="描述" align="center">
           <template slot-scope="scope">
             <div class="href-box">
@@ -114,8 +123,7 @@
       </el-table>
       <pagination
         :pageTotal="pageTotal"
-        :current-page="incomePayData.page"
-        :page-size="incomePayData.size"
+        :paginations="paginations"
         @handleCurrentChange="handleCurrentChange"
         @handleSizeChange="handleSizeChange"
       ></pagination>
@@ -123,6 +131,7 @@
         v-if="addFundDialog.show"
         :isShow="addFundDialog.show"
         :dialogRow="addFundDialog.dialogRow"
+        :domains="domains"
         @getFundList="getproductList"
         @closeDialog="hideAddFundDialog"
       ></AddArticleDialog>
@@ -298,10 +307,11 @@ export default {
         show: false,
         dialogRow: {},
       },
-      incomePayData: {
-        page: 0,
-        size: 20,
-        name: '',
+      paginations: {
+        pageIndex: 1, // 当前位于哪页
+        pageSize: 20, // 1页显示多少条
+        pageSizes: [5, 10, 15, 20], //每页显示多少条
+        layout: 'total, sizes, prev, pager, next, jumper', // 翻页属性
       },
       pageTotal: 0,
     }
@@ -324,7 +334,6 @@ export default {
   },
   mounted() {
     this.getproductList()
-    this.getdomainList()
   },
   methods: {
     setAddress(value) {},
@@ -336,8 +345,8 @@ export default {
     getproductList() {
       let _this = this
       const param = {
-        pageNum: this.incomePayData.page + 1,
-        pageSize: this.incomePayData.size,
+        pageNum: this.paginations.pageIndex,
+        pageSize: this.paginations.pageSize,
         searchKey: this.search.searchKey,
         categoryId: this.search.categoryId,
         // status: this.search.status,
@@ -349,6 +358,7 @@ export default {
         this.pageTotal = res.data.total
 
         this.tableData = res.data.records
+        this.getdomainList()
       })
     },
     getdomainList() {
@@ -363,6 +373,15 @@ export default {
       }
       mgdomainlist(param).then((res) => {
         this.domains = res.data.records
+
+        this.tableData.map((info, index) => {
+          if (info.domainId) {
+            this.tableData[index].domain = this.domains.find(
+              (s) => s.id == info.domainId
+            ).domain
+            this.$set(this.tableData, index, this.tableData[index])
+          }
+        })
       })
     },
     handleAvatarSuccess1(res, file) {
@@ -442,13 +461,13 @@ export default {
     },
     // 上下分页
     handleCurrentChange(val) {
-      this.incomePayData.page = val
+      this.paginations.pageIndex = val
       console.log('val', val)
       this.getproductList()
     },
     // 每页显示多少条
     handleSizeChange(val) {
-      this.incomePayData.size = val
+      this.paginations.pageSize = val
       this.getproductList()
     },
     getPay(val) {

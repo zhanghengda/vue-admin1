@@ -35,7 +35,17 @@
             </div>
           </el-upload>
         </el-form-item>
-
+        <el-form-item prop="categoryId" label="发布域名:">
+          <el-select v-model="form.domainId" placeholder="请选择">
+            <el-option
+              v-for="item in domains"
+              :key="item.id"
+              :label="item.domain"
+              :value="item.id"
+            >
+            </el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item prop="content" label="描述:">
           <Editor
             @listenToDetail="getDetail1"
@@ -81,6 +91,7 @@ export default {
         content: '',
         imgUrl: '',
       },
+
       form_rules: {
         ntitleame: [
           { required: true, message: '标题不能为空！', trigger: 'blur' },
@@ -105,6 +116,7 @@ export default {
   props: {
     isShow: Boolean,
     dialogRow: Object,
+    domains: Array,
   },
   computed: {
     ...mapGetters(['addFundDialog']),

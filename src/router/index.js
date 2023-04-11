@@ -106,6 +106,15 @@ export const constantRouterMap = [
         component: () => import('@/page/fundList/domain'),
       },
       {
+        name: 'domainsetgame',
+        path: 'domainsetgame',
+        meta: {
+          routerType: 'admin',
+          title: '域名游戏配置',
+        },
+        component: () => import('@/page/fundList/domainsetgame'),
+      },
+      {
         path: 'article',
         name: 'article',
         meta: {

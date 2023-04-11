@@ -21,6 +21,24 @@
         <el-form-item prop="sort" label="排序:">
           <el-input type="number" v-model="form.sort"></el-input>
         </el-form-item>
+
+        <el-form-item v-model="form.imgUrl" label="游戏logo:">
+          <el-upload
+            class="avatar-uploader"
+            action="/gs/comm/fileupload"
+            :show-file-list="false"
+            :data="uploadparams"
+            :headers="token"
+            :on-success="handleAvatarSuccess1"
+            :before-upload="beforeAvatarUpload"
+          >
+            <div class="el-upload">
+              <img v-if="form.imgUrl1" :src="form.imgUrl1" class="avatar" />
+              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            </div>
+          </el-upload>
+        </el-form-item>
+
         <el-form-item class="text_right">
           <el-button @click="isVisible = false">取 消</el-button>
           <el-button type="primary" @click="onSubmit('form')">提 交</el-button>
@@ -44,15 +62,20 @@ export default {
     return {
       fileList: [],
       token: {
-        Authorization: 'Bearer ' + getToken('Token'),
+        token: getToken('Token'),
       },
       imageUrl: '',
       areaData: [],
       isVisible: this.isShow,
+      uploadparams: {
+        type: 1,
+        mode: 2,
+      },
       form: {
         sort: '',
         /** 追溯链接 */
         category: '',
+        imgUrl: '',
       },
       form_rules: {
         category: [
@@ -115,7 +138,8 @@ export default {
 
     handleAvatarSuccess1(res, file) {
       if (res.code == 0) {
-        this.form.inspectionEnterpriseLogo = res.data
+        this.form.imgUrl1 = res.data.fileUrl
+        this.form.imgUrl = res.data.fileUrl
       }
     },
     handleAvatarSuccess(res, file) {

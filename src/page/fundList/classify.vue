@@ -25,7 +25,18 @@
           width="*"
         >
         </el-table-column>
-
+        <el-table-column prop="logoUrl" width="120" label="logo" align="center">
+          <template slot-scope="scope">
+            <div class="banner-box">
+              <img
+                v-if="scope.row.imgUrl"
+                class="banner"
+                :src="scope.row.imgUrl"
+                alt=""
+              />
+            </div>
+          </template>
+        </el-table-column>
         <el-table-column prop="sort" width="*" label="排序" align="center">
         </el-table-column>
         <el-table-column
@@ -63,20 +74,19 @@
               @click="onEdit(scope.row)"
               >配置 游戏</el-button
             > -->
-            <!-- <el-button
+            <el-button
               type="danger"
               icon="delete"
               size="mini"
               @click="onDelete(scope.row, scope.$index)"
               >删除</el-button
-            > -->
+            >
           </template>
         </el-table-column>
       </el-table>
       <pagination
         :pageTotal="pageTotal"
-        :current-page="incomePayData.page"
-        :page-size="incomePayData.size"
+        :paginations="paginations"
         @handleCurrentChange="handleCurrentChange"
         @handleSizeChange="handleSizeChange"
       ></pagination>
@@ -127,11 +137,13 @@ export default {
         show: false,
         dialogRow: {},
       },
-      incomePayData: {
-        page: 0,
-        size: 20,
-        name: '',
+      paginations: {
+        pageIndex: 1, // 当前位于哪页
+        pageSize: 20, // 1页显示多少条
+        pageSizes: [5, 10, 15, 20], //每页显示多少条
+        layout: 'total, sizes, prev, pager, next, jumper', // 翻页属性
       },
+
       pageTotal: 0,
     }
   },
@@ -163,8 +175,8 @@ export default {
     },
     getproductList() {
       const param = {
-        pageNum: this.incomePayData.page,
-        pageSize: this.incomePayData.size,
+        pageNum: this.paginations.pageIndex,
+        pageSize: this.paginations.pageSize,
         searchKey: '',
         // catetoryId:'',
         // status:'',
@@ -187,13 +199,13 @@ export default {
     },
     // 上下分页
     handleCurrentChange(val) {
-      this.incomePayData.page = val
+      this.paginations.pageIndex = val
       console.log('val', val)
       this.getproductList()
     },
     // 每页显示多少条
     handleSizeChange(val) {
-      this.incomePayData.size = val
+      this.paginations.pageSize = val
       this.getproductList()
     },
     getPay(val) {
@@ -218,11 +230,18 @@ export default {
           let id = row.id + ''
           const para = { paramIds: [id] }
           categorydel(para).then((res) => {
-            this.$message({
-              message: '删除成功',
-              type: 'success',
-            })
-            this.getproductList()
+            if (res.code == 0) {
+              this.$message({
+                message: '删除成功',
+                type: 'success',
+              })
+              this.getproductList()
+            } else {
+              this.$message({
+                message: res.msg,
+                type: 'error',
+              })
+            }
           })
         })
         .catch(() => {})

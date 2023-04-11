@@ -2,7 +2,7 @@
   <div class="fillcontain">
     <search-item
       @showDialog="showAddFundDialog"
-      @searchList="getproductList"
+      @searchList="searchdata"
       isAllShow
       isGameNameShow
       isGameUrlShow
@@ -179,8 +179,7 @@
       </el-table>
       <pagination
         :pageTotal="pageTotal"
-        :current-page="incomePayData.page"
-        :page-size="incomePayData.size"
+        :paginations="paginations"
         @handleCurrentChange="handleCurrentChange"
         @handleSizeChange="handleSizeChange"
       ></pagination>
@@ -188,7 +187,7 @@
         v-if="addFundDialog.show"
         :isShow="addFundDialog.show"
         :dialogRow="addFundDialog.dialogRow"
-        @getFundList="getproductList"
+        @getFundList="searchdata"
         @closeDialog="hideAddFundDialog"
       ></addFundDialog>
       <!-- 批量上传-->
@@ -378,10 +377,12 @@ export default {
         show: false,
         dialogRow: {},
       },
-      incomePayData: {
-        page: 0,
-        size: 20,
-        name: '',
+
+      paginations: {
+        pageIndex: 1, // 当前位于哪页
+        pageSize: 20, // 1页显示多少条
+        pageSizes: [5, 10, 15, 20], //每页显示多少条
+        layout: 'total, sizes, prev, pager, next, jumper', // 翻页属性
       },
       pageTotal: 0,
     }
@@ -413,14 +414,18 @@ export default {
         this.tableHeight = document.body.clientHeight - 300
       })
     },
+    searchdata() {
+      this.paginations.pageIndex = 1
+      this.getproductList()
+    },
     getproductList() {
       let _this = this
       const param = {
-        pageNum: this.incomePayData.page + 1,
-        pageSize: this.incomePayData.size,
+        pageNum: this.paginations.pageIndex,
+        pageSize: this.paginations.pageSize,
         searchKey: this.search.searchKey,
         categoryId: this.search.categoryId,
-        // status: this.search.status,
+        status: this.search.status,
         domainId: this.search.domainId,
         // domainId:'',
       }
@@ -434,7 +439,8 @@ export default {
             if (t.categoryId != '') {
               let categoryId = t.categoryId.split(',')
               categoryId.map((id, index) => {
-                let n = _this.categorys.find((f) => id == f.id).category
+                let categoryitem = _this.categorys.find((f) => id == f.id)
+                let n = categoryitem ? categoryitem.category : ''
                 if (index > 0) name += n + ','
                 else name += n
               })
@@ -552,13 +558,17 @@ export default {
     },
     // 上下分页
     handleCurrentChange(val) {
-      this.incomePayData.page = val
+      this.paginations.pageIndex = val
+      //   pageNum: this.paginations.pageIndex,
+      // pageSize: this.paginations.pageSize,
       console.log('val', val)
       this.getproductList()
     },
     // 每页显示多少条
     handleSizeChange(val) {
-      this.incomePayData.size = val
+      // this.incomePayData.pageSize = val
+      this.paginations.pageIndex = val
+
       this.getproductList()
     },
     getPay(val) {
@@ -571,9 +581,16 @@ export default {
 
     // 编辑操作方法
     onEdit(row) {
-      let categorys = row.categoryId.split(',')
-      row.categoryId = categorys.map(Number)
-      this.addFundDialog.dialogRow = { ...row, logoUrl1: row.logoUrl }
+      let row1 = JSON.stringify(row)
+      row1 = JSON.parse(row1)
+      if (!row1.categoryId) {
+        row1.categoryId = []
+      } else {
+        let categorys = row1.categoryId.split(',')
+        row1.categoryId = categorys.map(Number)
+      }
+
+      this.addFundDialog.dialogRow = { ...row1, logoUrl1: row1.logoUrl }
       this.showAddFundDialog('edit')
     },
     todownloadtemplate() {

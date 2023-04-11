@@ -10,6 +10,7 @@ const zh = {
     userManage: '用户管理',
     classify: '分类配置',
     domain: '域名配置',
+    domainsetgame: '域名游戏配置',
     share: '分享功能',
     article: '文章配置',
     infoManage: '信息管理',

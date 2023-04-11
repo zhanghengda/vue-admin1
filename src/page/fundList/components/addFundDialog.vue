@@ -145,6 +145,8 @@ export default {
 
     if (this.addFundDialog.type === 'edit' && this.dialogRow) {
       _this.form = _this.dialogRow
+
+      console.log('ssss', _this.form)
     } else {
       this.$nextTick(() => {
         this.$refs['form'].resetFields()

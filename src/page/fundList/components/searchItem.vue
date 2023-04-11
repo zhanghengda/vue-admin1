@@ -37,7 +37,8 @@
           </el-option>
         </el-select>
       </el-form-item>
-      <!-- <el-form-item label="上架状态">
+
+      <el-form-item v-if="isSearchShow" label="上架状态">
         <el-select v-model="search_data.status" placeholder="请选择">
           <el-option
             v-for="item in statusList"
@@ -47,7 +48,7 @@
           >
           </el-option>
         </el-select>
-      </el-form-item> -->
+      </el-form-item>
       <el-form-item>
         <el-button
           type="primary"
@@ -170,7 +171,7 @@ export default {
         {
           id: 0,
           value: 0,
-          lable: '草稿',
+          lable: '未上架',
         },
         {
           id: 1,
